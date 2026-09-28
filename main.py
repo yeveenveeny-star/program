@@ -1,319 +1,518 @@
-from http.server import HTTPServer, BaseHTTPRequestHandler
+import tkinter as tk
+import math
 
 
-HTML = """
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+# ==============================
+# 기본 설정
+# ==============================
 
-<title>휘명고등학교</title>
+WIDTH = 1200
+HEIGHT = 700
 
-<style>
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+root = tk.Tk()
+root.title("휘명고등학교")
+root.geometry(f"{WIDTH}x{HEIGHT}")
+root.resizable(False, False)
 
-body {
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background: #050607;
-    color: white;
-    font-family: sans-serif;
-}
 
-/* 전체 화면 */
-.screen {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    overflow: hidden;
+# ==============================
+# 화면
+# ==============================
 
-    background:
-        linear-gradient(
-            to bottom,
-            #11191d 0%,
-            #202a2e 40%,
-            #101517 100%
-        );
-}
-
-/* 복도 */
-.corridor {
-    position: absolute;
-    inset: 0;
-
-    background:
-        linear-gradient(
-            90deg,
-            #101619 0%,
-            #263237 35%,
-            #111719 50%,
-            #263237 65%,
-            #101619 100%
-        );
-}
-
-/* 복도 끝 */
-.end {
-    position: absolute;
-
-    left: 50%;
-    top: 25%;
-
-    transform: translateX(-50%);
-
-    width: 18%;
-    height: 48%;
-
-    background: #020303;
-
-    box-shadow:
-        0 0 80px rgba(0,0,0,0.9),
-        inset 0 0 40px #000;
-}
-
-/* 바닥 */
-.floor {
-    position: absolute;
-
-    left: 0;
-    bottom: 0;
-
-    width: 100%;
-    height: 48%;
-
-    background:
-        linear-gradient(
-            to bottom,
-            #272f32,
-            #0c1012
-        );
-
-    clip-path: polygon(
-        32% 0,
-        68% 0,
-        100% 100%,
-        0 100%
-    );
-}
-
-/* 형광등 */
-.light {
-    position: absolute;
-
-    left: 50%;
-    transform: translateX(-50%);
-
-    height: 6px;
-
-    background: #d9e0df;
-
-    box-shadow:
-        0 0 15px rgba(220,235,235,0.5);
-
-    opacity: 0.4;
-}
-
-.light1 {
-    top: 12%;
-    width: 14%;
-}
-
-.light2 {
-    top: 23%;
-    width: 9%;
-}
-
-.light3 {
-    top: 32%;
-    width: 5%;
-}
-
-/* 어두운 가장자리 */
-.dark {
-    position: absolute;
-    inset: 0;
-
-    background:
-        radial-gradient(
-            ellipse at center,
-            transparent 20%,
-            rgba(0,0,0,0.3) 55%,
-            rgba(0,0,0,0.9) 100%
-        );
-}
-
-/* 메뉴 */
-.menu {
-    position: absolute;
-
-    left: 50%;
-    top: 50%;
-
-    transform: translate(-50%, -50%);
-
-    text-align: center;
-
-    width: 100%;
-}
-
-/* 제목 */
-.title {
-    font-family: serif;
-
-    font-size: 70px;
-
-    font-weight: normal;
-
-    letter-spacing: 12px;
-
-    color: #e1e6e6;
-
-    text-shadow:
-        0 0 20px rgba(255,255,255,0.15);
-}
-
-/* 버튼 */
-.buttons {
-    margin-top: 70px;
-
-    display: flex;
-    flex-direction: column;
-
-    align-items: center;
-
-    gap: 18px;
-}
-
-button {
-    width: 240px;
-    height: 55px;
-
-    background: rgba(5,8,9,0.65);
-
-    border: 1px solid rgba(220,230,230,0.3);
-
-    color: #dce2e2;
-
-    font-size: 16px;
-
-    letter-spacing: 4px;
-
-    cursor: pointer;
-
-    transition: 0.3s;
-}
-
-button:hover {
-    background: rgba(180,200,200,0.12);
-
-    border-color: rgba(230,240,240,0.7);
-
-    color: white;
-
-    transform: translateY(-2px);
-
-    box-shadow:
-        0 0 25px rgba(200,220,220,0.1);
-}
-
-</style>
-</head>
-
-
-<body>
-
-<div class="screen">
-
-    <div class="corridor"></div>
-
-    <div class="end"></div>
-
-    <div class="floor"></div>
-
-    <div class="light light1"></div>
-    <div class="light light2"></div>
-    <div class="light light3"></div>
-
-    <div class="dark"></div>
-
-
-    <div class="menu">
-
-        <div class="title">
-            휘명고등학교
-        </div>
-
-
-        <div class="buttons">
-
-            <button onclick="newGame()">
-                새 게임 시작
-            </button>
-
-            <button onclick="continueGame()">
-                이어서 하기
-            </button>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<script>
-
-function newGame() {
-
-    alert("새 게임을 시작합니다.");
-
-}
-
-
-function continueGame() {
-
-    alert("저장된 게임을 불러옵니다.");
-
-}
-
-</script>
-
-</body>
-</html>
-"""
-
-
-class GameHandler(BaseHTTPRequestHandler):
-
-    def do_GET(self):
-
-        self.send_response(200)
-
-        self.send_header(
-            "Content-type",
-            "text/html; charset=utf-8"
-        )
-
-        self.end_headers()
-
-        self.wfile.write(
-            HTML.encode("utf-8")
-        )
-
-
-server = HTTPServer(
-    ("localhost", 8000),
-    GameHandler
+canvas = tk.Canvas(
+    root,
+    width=WIDTH,
+    height=HEIGHT,
+    highlightthickness=0,
+    bg="#050708"
 )
 
-print("게임 실행 중...")
-print("http://localhost:8000")
+canvas.pack()
 
-server.serve_forever()
+
+# ==============================
+# 배경
+# ==============================
+
+# 전체 배경
+canvas.create_rectangle(
+    0, 0,
+    WIDTH, HEIGHT,
+    fill="#111719",
+    outline=""
+)
+
+
+# 천장
+canvas.create_polygon(
+    0, 0,
+    WIDTH, 0,
+    800, 300,
+    400, 300,
+    fill="#20282b",
+    outline=""
+)
+
+
+# 왼쪽 벽
+canvas.create_polygon(
+    0, 150,
+    400, 300,
+    400, HEIGHT,
+    0, HEIGHT,
+    fill="#151d20",
+    outline=""
+)
+
+
+# 오른쪽 벽
+canvas.create_polygon(
+    WIDTH, 150,
+    800, 300,
+    800, HEIGHT,
+    WIDTH, HEIGHT,
+    fill="#151d20",
+    outline=""
+)
+
+
+# ==============================
+# 복도 끝
+# ==============================
+
+canvas.create_rectangle(
+    400, 300,
+    800, 650,
+    fill="#030405",
+    outline=""
+)
+
+
+# 복도 끝의 더 깊은 어둠
+canvas.create_rectangle(
+    500, 350,
+    700, 650,
+    fill="#000000",
+    outline=""
+)
+
+
+# ==============================
+# 바닥
+# ==============================
+
+canvas.create_polygon(
+    400, 300,
+    800, 300,
+    WIDTH, HEIGHT,
+    0, HEIGHT,
+    fill="#202729",
+    outline=""
+)
+
+
+# 바닥 중앙 어두운 부분
+canvas.create_polygon(
+    500, 300,
+    700, 300,
+    850, HEIGHT,
+    350, HEIGHT,
+    fill="#111617",
+    outline=""
+)
+
+
+# ==============================
+# 복도 타일 / 원근선
+# ==============================
+
+for i in range(1, 8):
+
+    y = 300 + i * 55
+
+    canvas.create_line(
+        400 - i * 55,
+        y,
+        800 + i * 55,
+        y,
+        fill="#151b1d",
+        width=2
+    )
+
+
+# 왼쪽 원근선
+canvas.create_line(
+    400, 300,
+    0, HEIGHT,
+    fill="#111719",
+    width=3
+)
+
+
+# 오른쪽 원근선
+canvas.create_line(
+    800, 300,
+    WIDTH, HEIGHT,
+    fill="#111719",
+    width=3
+)
+
+
+# ==============================
+# 형광등
+# ==============================
+
+lights = []
+
+
+def create_light(y, width):
+
+    light = canvas.create_rectangle(
+        WIDTH // 2 - width // 2,
+        y,
+        WIDTH // 2 + width // 2,
+        y + 6,
+        fill="#c9d0cf",
+        outline=""
+    )
+
+    lights.append(light)
+
+
+create_light(70, 180)
+create_light(175, 120)
+create_light(250, 75)
+
+
+# ==============================
+# 제목
+# ==============================
+
+title = canvas.create_text(
+    WIDTH // 2,
+    330,
+    text="휘명고등학교",
+    fill="#e0e5e5",
+    font=("Malgun Gothic", 54),
+)
+
+
+# ==============================
+# 버튼
+# ==============================
+
+def button_hover(event):
+
+    event.widget.configure(
+        bg="#20282a",
+        fg="#ffffff"
+    )
+
+
+def button_leave(event):
+
+    event.widget.configure(
+        bg="#080b0c",
+        fg="#cfd5d5"
+    )
+
+
+def new_game():
+
+    name_screen()
+
+
+def continue_game():
+
+    message = tk.Label(
+        root,
+        text="저장된 게임이 없습니다.",
+        bg="#050708",
+        fg="#d5dddd",
+        font=("Malgun Gothic", 16)
+    )
+
+    message.place(
+        relx=0.5,
+        rely=0.85,
+        anchor="center"
+    )
+
+    root.after(
+        2000,
+        message.destroy
+    )
+
+
+# 새 게임 버튼
+new_button = tk.Button(
+    root,
+    text="새 게임 시작",
+    command=new_game,
+
+    bg="#080b0c",
+    fg="#cfd5d5",
+
+    activebackground="#20282a",
+    activeforeground="#ffffff",
+
+    relief="flat",
+    bd=0,
+
+    width=18,
+    height=2,
+
+    font=("Malgun Gothic", 15)
+)
+
+new_button.place(
+    relx=0.5,
+    rely=0.65,
+    anchor="center"
+)
+
+
+# 이어하기 버튼
+continue_button = tk.Button(
+    root,
+    text="이어서 하기",
+    command=continue_game,
+
+    bg="#080b0c",
+    fg="#cfd5d5",
+
+    activebackground="#20282a",
+    activeforeground="#ffffff",
+
+    relief="flat",
+    bd=0,
+
+    width=18,
+    height=2,
+
+    font=("Malgun Gothic", 15)
+)
+
+continue_button.place(
+    relx=0.5,
+    rely=0.74,
+    anchor="center"
+)
+
+
+new_button.bind(
+    "<Enter>",
+    button_hover
+)
+
+new_button.bind(
+    "<Leave>",
+    button_leave
+)
+
+continue_button.bind(
+    "<Enter>",
+    button_hover
+)
+
+continue_button.bind(
+    "<Leave>",
+    button_leave
+)
+
+
+# ==============================
+# 이름 입력 화면
+# ==============================
+
+def name_screen():
+
+    # 기존 화면 숨기기
+    new_button.place_forget()
+    continue_button.place_forget()
+
+    canvas.itemconfig(
+        title,
+        state="hidden"
+    )
+
+    # 화면 어둡게
+    overlay = tk.Frame(
+        root,
+        bg="#050708"
+    )
+
+    overlay.place(
+        x=0,
+        y=0,
+        width=WIDTH,
+        height=HEIGHT
+    )
+
+
+    label = tk.Label(
+        overlay,
+        text="당신의 이름을 입력하세요",
+        bg="#050708",
+        fg="#dfe5e5",
+        font=("Malgun Gothic", 24)
+    )
+
+    label.place(
+        relx=0.5,
+        rely=0.40,
+        anchor="center"
+    )
+
+
+    entry = tk.Entry(
+        overlay,
+        bg="#111719",
+        fg="#ffffff",
+        insertbackground="#ffffff",
+
+        relief="flat",
+        justify="center",
+
+        font=("Malgun Gothic", 18),
+
+        width=20
+    )
+
+    entry.place(
+        relx=0.5,
+        rely=0.50,
+        anchor="center"
+    )
+
+    entry.focus()
+
+
+    def start_game():
+
+        player_name = entry.get().strip()
+
+        if player_name == "":
+            player_name = "학생"
+
+        overlay.destroy()
+
+        start_game_screen(player_name)
+
+
+    start_button = tk.Button(
+        overlay,
+        text="시작",
+        command=start_game,
+
+        bg="#111719",
+        fg="#dfe5e5",
+
+        activebackground="#263033",
+        activeforeground="#ffffff",
+
+        relief="flat",
+        bd=0,
+
+        width=12,
+        height=2,
+
+        font=("Malgun Gothic", 14)
+    )
+
+    start_button.place(
+        relx=0.5,
+        rely=0.60,
+        anchor="center"
+    )
+
+
+# ==============================
+# 게임 시작 화면
+# ==============================
+
+def start_game_screen(player_name):
+
+    for widget in root.winfo_children():
+
+        if isinstance(widget, tk.Button):
+            widget.place_forget()
+
+    canvas.delete("all")
+
+    canvas.create_rectangle(
+        0, 0,
+        WIDTH, HEIGHT,
+        fill="#050708",
+        outline=""
+    )
+
+    canvas.create_text(
+        WIDTH // 2,
+        HEIGHT // 2 - 60,
+        text=f"{player_name}의 이야기",
+        fill="#dfe5e5",
+        font=("Malgun Gothic", 32)
+    )
+
+    canvas.create_text(
+        WIDTH // 2,
+        HEIGHT // 2 + 10,
+        text="휘명고등학교",
+        fill="#899494",
+        font=("Malgun Gothic", 18)
+    )
+
+    canvas.create_text(
+        WIDTH // 2,
+        HEIGHT // 2 + 80,
+        text="게임이 시작됩니다...",
+        fill="#606b6b",
+        font=("Malgun Gothic", 14)
+    )
+
+
+# ==============================
+# 형광등 깜빡임
+# ==============================
+
+def flicker():
+
+    for light in lights:
+
+        if math.floor(root.tk.call("after", "info") if False else 0):
+
+            pass
+
+    # 아주 가끔 밝기가 변하는 효과
+    import random
+
+    for light in lights:
+
+        value = random.choice([
+            "#c9d0cf",
+            "#c9d0cf",
+            "#aeb6b5",
+            "#727b7b"
+        ])
+
+        canvas.itemconfig(
+            light,
+            fill=value
+        )
+
+    root.after(
+        random.randint(300, 1500),
+        flicker
+    )
+
+
+flicker()
+
+
+# ==============================
+# 실행
+# ==============================
+
+root.mainloop()
