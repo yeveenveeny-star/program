@@ -1,434 +1,319 @@
+from http.server import HTTPServer, BaseHTTPRequestHandler
+
+
+HTML = """
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>휘명고등학교</title>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            width: 100vw;
-            height: 100vh;
-            overflow: hidden;
-            background: #050607;
-            font-family: "Noto Sans KR", sans-serif;
-            color: white;
-        }
-
-        /* =========================
-           복도 배경
-        ========================= */
-
-        .game-screen {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-
-            background:
-                linear-gradient(
-                    rgba(3, 6, 8, 0.45),
-                    rgba(2, 4, 6, 0.75)
-                ),
-                linear-gradient(
-                    90deg,
-                    #11191d 0%,
-                    #253138 35%,
-                    #11181c 50%,
-                    #253138 65%,
-                    #11191d 100%
-                );
-        }
-
-        /* 복도 천장 */
-        .ceiling {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 38%;
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    #11181b,
-                    #293237 70%,
-                    #151b1e
-                );
-
-            clip-path: polygon(
-                0 0,
-                100% 0,
-                67% 100%,
-                33% 100%
-            );
-        }
-
-        /* 복도 바닥 */
-        .floor {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            height: 48%;
-
-            background:
-                linear-gradient(
-                    to bottom,
-                    #252d30,
-                    #101416 80%
-                );
-
-            clip-path: polygon(
-                33% 0,
-                67% 0,
-                100% 100%,
-                0 100%
-            );
-        }
-
-        /* 복도 양쪽 벽 */
-        .wall-left,
-        .wall-right {
-            position: absolute;
-            top: 20%;
-            width: 35%;
-            height: 55%;
-            background: #182024;
-        }
-
-        .wall-left {
-            left: 0;
-            clip-path: polygon(0 0, 100% 25%, 100% 100%, 0 100%);
-        }
-
-        .wall-right {
-            right: 0;
-            clip-path: polygon(0 25%, 100% 0, 100% 100%, 0 100%);
-        }
-
-        /* 복도 끝 */
-        .hall-end {
-            position: absolute;
-            left: 50%;
-            top: 27%;
-            transform: translateX(-50%);
-
-            width: 18%;
-            height: 43%;
-
-            background:
-                radial-gradient(
-                    ellipse at center,
-                    #080b0d 0%,
-                    #020304 65%,
-                    #000000 100%
-                );
-
-            box-shadow:
-                0 0 50px rgba(0, 0, 0, 0.9),
-                inset 0 0 50px rgba(0, 0, 0, 0.9);
-        }
-
-        /* 천장 형광등 */
-        .light {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-
-            width: 8%;
-            height: 7px;
-
-            background: #cbd3d3;
-
-            box-shadow:
-                0 0 10px rgba(220, 235, 235, 0.6),
-                0 0 30px rgba(180, 210, 210, 0.25);
-
-            opacity: 0.65;
-        }
-
-        .light1 {
-            top: 11%;
-            width: 15%;
-            opacity: 0.4;
-        }
-
-        .light2 {
-            top: 22%;
-            width: 10%;
-            opacity: 0.35;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>휘명고등학교</title>
+
+<style>
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background: #050607;
+    color: white;
+    font-family: sans-serif;
+}
+
+/* 전체 화면 */
+.screen {
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    overflow: hidden;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #11191d 0%,
+            #202a2e 40%,
+            #101517 100%
+        );
+}
+
+/* 복도 */
+.corridor {
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            90deg,
+            #101619 0%,
+            #263237 35%,
+            #111719 50%,
+            #263237 65%,
+            #101619 100%
+        );
+}
+
+/* 복도 끝 */
+.end {
+    position: absolute;
+
+    left: 50%;
+    top: 25%;
+
+    transform: translateX(-50%);
+
+    width: 18%;
+    height: 48%;
+
+    background: #020303;
+
+    box-shadow:
+        0 0 80px rgba(0,0,0,0.9),
+        inset 0 0 40px #000;
+}
+
+/* 바닥 */
+.floor {
+    position: absolute;
+
+    left: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 48%;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #272f32,
+            #0c1012
+        );
+
+    clip-path: polygon(
+        32% 0,
+        68% 0,
+        100% 100%,
+        0 100%
+    );
+}
 
-        .light3 {
-            top: 31%;
-            width: 6%;
-            opacity: 0.28;
-        }
+/* 형광등 */
+.light {
+    position: absolute;
 
-        /* 복도 원근선 */
-        .perspective-line {
-            position: absolute;
-            left: 50%;
-            top: 27%;
+    left: 50%;
+    transform: translateX(-50%);
 
-            width: 2px;
-            height: 73%;
+    height: 6px;
 
-            background: rgba(0, 0, 0, 0.3);
+    background: #d9e0df;
 
-            transform-origin: top;
-        }
+    box-shadow:
+        0 0 15px rgba(220,235,235,0.5);
 
-        .line-left {
-            transform: rotate(34deg);
-        }
+    opacity: 0.4;
+}
 
-        .line-right {
-            transform: rotate(-34deg);
-        }
+.light1 {
+    top: 12%;
+    width: 14%;
+}
 
-        /* =========================
-           어두운 비네팅
-        ========================= */
+.light2 {
+    top: 23%;
+    width: 9%;
+}
 
-        .darkness {
-            position: absolute;
-            inset: 0;
+.light3 {
+    top: 32%;
+    width: 5%;
+}
 
-            background:
-                radial-gradient(
-                    ellipse at center,
-                    transparent 20%,
-                    rgba(0, 0, 0, 0.25) 55%,
-                    rgba(0, 0, 0, 0.85) 100%
-                );
+/* 어두운 가장자리 */
+.dark {
+    position: absolute;
+    inset: 0;
 
-            pointer-events: none;
-        }
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 20%,
+            rgba(0,0,0,0.3) 55%,
+            rgba(0,0,0,0.9) 100%
+        );
+}
 
-        /* =========================
-           메인 UI
-        ========================= */
+/* 메뉴 */
+.menu {
+    position: absolute;
 
-        .menu {
-            position: absolute;
-            z-index: 10;
+    left: 50%;
+    top: 50%;
 
-            top: 50%;
-            left: 50%;
+    transform: translate(-50%, -50%);
 
-            transform: translate(-50%, -50%);
+    text-align: center;
 
-            width: 100%;
-            text-align: center;
-        }
+    width: 100%;
+}
 
-        .title {
-            font-family: "Noto Serif KR", serif;
+/* 제목 */
+.title {
+    font-family: serif;
 
-            font-size: clamp(42px, 6vw, 86px);
-            font-weight: 500;
-            letter-spacing: 12px;
+    font-size: 70px;
 
-            color: #e3e7e7;
+    font-weight: normal;
 
-            text-shadow:
-                0 0 10px rgba(255,255,255,0.12),
-                0 0 30px rgba(150,180,180,0.08);
+    letter-spacing: 12px;
 
-            animation: titleFade 3s ease-in-out infinite alternate;
-        }
+    color: #e1e6e6;
 
-        .subtitle {
-            margin-top: 15px;
+    text-shadow:
+        0 0 20px rgba(255,255,255,0.15);
+}
 
-            font-size: 12px;
-            letter-spacing: 6px;
+/* 버튼 */
+.buttons {
+    margin-top: 70px;
 
-            color: rgba(210,220,220,0.45);
-        }
+    display: flex;
+    flex-direction: column;
 
-        .buttons {
-            margin-top: 70px;
+    align-items: center;
 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+    gap: 18px;
+}
 
-            gap: 18px;
-        }
+button {
+    width: 240px;
+    height: 55px;
 
-        .menu-button {
-            width: 240px;
-            height: 55px;
+    background: rgba(5,8,9,0.65);
 
-            background: rgba(10, 14, 16, 0.55);
+    border: 1px solid rgba(220,230,230,0.3);
 
-            border: 1px solid rgba(200, 210, 210, 0.22);
+    color: #dce2e2;
 
-            color: rgba(230,235,235,0.85);
+    font-size: 16px;
 
-            font-size: 16px;
-            letter-spacing: 4px;
+    letter-spacing: 4px;
 
-            cursor: pointer;
+    cursor: pointer;
 
-            transition:
-                background 0.3s,
-                border-color 0.3s,
-                color 0.3s,
-                transform 0.3s,
-                box-shadow 0.3s;
-        }
+    transition: 0.3s;
+}
 
-        .menu-button:hover {
-            background: rgba(160, 180, 180, 0.12);
+button:hover {
+    background: rgba(180,200,200,0.12);
 
-            border-color: rgba(220, 230, 230, 0.55);
+    border-color: rgba(230,240,240,0.7);
 
-            color: white;
+    color: white;
 
-            transform: translateY(-2px);
+    transform: translateY(-2px);
 
-            box-shadow:
-                0 0 20px rgba(180,200,200,0.08);
-        }
+    box-shadow:
+        0 0 25px rgba(200,220,220,0.1);
+}
 
-        .menu-button:active {
-            transform: translateY(0);
-        }
-
-        /* =========================
-           애니메이션
-        ========================= */
-
-        @keyframes titleFade {
-            from {
-                opacity: 0.82;
-            }
-
-            to {
-                opacity: 1;
-            }
-        }
-
-        /* 형광등 미세한 깜빡임 */
-        .light1 {
-            animation: flicker 6s infinite;
-        }
-
-        .light2 {
-            animation: flicker 4.5s infinite;
-        }
-
-        @keyframes flicker {
-            0%, 94%, 100% {
-                opacity: 0.35;
-            }
-
-            95% {
-                opacity: 0.08;
-            }
-
-            96% {
-                opacity: 0.35;
-            }
-
-            97% {
-                opacity: 0.15;
-            }
-
-            98% {
-                opacity: 0.35;
-            }
-        }
-
-        /* 모바일 */
-        @media (max-width: 600px) {
-            .title {
-                letter-spacing: 6px;
-            }
-
-            .menu-button {
-                width: 210px;
-            }
-        }
-    </style>
+</style>
 </head>
+
 
 <body>
 
-    <div class="game-screen">
+<div class="screen">
 
-        <!-- 복도 배경 -->
-        <div class="ceiling"></div>
+    <div class="corridor"></div>
 
-        <div class="wall-left"></div>
-        <div class="wall-right"></div>
+    <div class="end"></div>
 
-        <div class="hall-end"></div>
+    <div class="floor"></div>
 
-        <div class="floor"></div>
+    <div class="light light1"></div>
+    <div class="light light2"></div>
+    <div class="light light3"></div>
 
-        <!-- 천장 형광등 -->
-        <div class="light light1"></div>
-        <div class="light light2"></div>
-        <div class="light light3"></div>
+    <div class="dark"></div>
 
-        <!-- 원근선 -->
-        <div class="perspective-line line-left"></div>
-        <div class="perspective-line line-right"></div>
 
-        <!-- 어두운 화면 효과 -->
-        <div class="darkness"></div>
+    <div class="menu">
 
-        <!-- 메인 메뉴 -->
-        <div class="menu">
+        <div class="title">
+            휘명고등학교
+        </div>
 
-            <h1 class="title">휘명고등학교</h1>
 
-            <div class="subtitle">
-                WHIMYEONG HIGH SCHOOL
-            </div>
+        <div class="buttons">
 
-            <div class="buttons">
+            <button onclick="newGame()">
+                새 게임 시작
+            </button>
 
-                <button
-                    class="menu-button"
-                    onclick="newGame()">
-                    새 게임 시작
-                </button>
+            <button onclick="continueGame()">
+                이어서 하기
+            </button>
 
-                <button
-                    class="menu-button"
-                    onclick="continueGame()">
-                    이어서 하기
-                </button>
-
-            </div>
         </div>
 
     </div>
 
+</div>
 
-    <script>
 
-        function newGame() {
-            alert("새 게임을 시작합니다.");
-        }
+<script>
 
-        function continueGame() {
-            alert("저장된 게임을 확인합니다.");
-        }
+function newGame() {
 
-    </script>
+    alert("새 게임을 시작합니다.");
+
+}
+
+
+function continueGame() {
+
+    alert("저장된 게임을 불러옵니다.");
+
+}
+
+</script>
 
 </body>
 </html>
+"""
+
+
+class GameHandler(BaseHTTPRequestHandler):
+
+    def do_GET(self):
+
+        self.send_response(200)
+
+        self.send_header(
+            "Content-type",
+            "text/html; charset=utf-8"
+        )
+
+        self.end_headers()
+
+        self.wfile.write(
+            HTML.encode("utf-8")
+        )
+
+
+server = HTTPServer(
+    ("localhost", 8000),
+    GameHandler
+)
+
+print("게임 실행 중...")
+print("http://localhost:8000")
+
+server.serve_forever()
