@@ -1,518 +1,568 @@
-import tkinter as tk
-import math
+import streamlit as st
+import random
+import time
 
-
-# ==============================
+# ==========================================
 # 기본 설정
-# ==============================
+# ==========================================
 
-WIDTH = 1200
-HEIGHT = 700
-
-
-root = tk.Tk()
-root.title("휘명고등학교")
-root.geometry(f"{WIDTH}x{HEIGHT}")
-root.resizable(False, False)
-
-
-# ==============================
-# 화면
-# ==============================
-
-canvas = tk.Canvas(
-    root,
-    width=WIDTH,
-    height=HEIGHT,
-    highlightthickness=0,
-    bg="#050708"
-)
-
-canvas.pack()
-
-
-# ==============================
-# 배경
-# ==============================
-
-# 전체 배경
-canvas.create_rectangle(
-    0, 0,
-    WIDTH, HEIGHT,
-    fill="#111719",
-    outline=""
+st.set_page_config(
+    page_title="휘명고등학교",
+    page_icon="🏫",
+    layout="wide",
+    initial_sidebar_state="collapsed"
 )
 
 
-# 천장
-canvas.create_polygon(
-    0, 0,
-    WIDTH, 0,
-    800, 300,
-    400, 300,
-    fill="#20282b",
-    outline=""
-)
-
-
-# 왼쪽 벽
-canvas.create_polygon(
-    0, 150,
-    400, 300,
-    400, HEIGHT,
-    0, HEIGHT,
-    fill="#151d20",
-    outline=""
-)
-
-
-# 오른쪽 벽
-canvas.create_polygon(
-    WIDTH, 150,
-    800, 300,
-    800, HEIGHT,
-    WIDTH, HEIGHT,
-    fill="#151d20",
-    outline=""
-)
-
-
-# ==============================
-# 복도 끝
-# ==============================
-
-canvas.create_rectangle(
-    400, 300,
-    800, 650,
-    fill="#030405",
-    outline=""
-)
-
-
-# 복도 끝의 더 깊은 어둠
-canvas.create_rectangle(
-    500, 350,
-    700, 650,
-    fill="#000000",
-    outline=""
-)
-
-
-# ==============================
-# 바닥
-# ==============================
-
-canvas.create_polygon(
-    400, 300,
-    800, 300,
-    WIDTH, HEIGHT,
-    0, HEIGHT,
-    fill="#202729",
-    outline=""
-)
-
-
-# 바닥 중앙 어두운 부분
-canvas.create_polygon(
-    500, 300,
-    700, 300,
-    850, HEIGHT,
-    350, HEIGHT,
-    fill="#111617",
-    outline=""
-)
+# ==========================================
+# CSS
+# ==========================================
 
+st.markdown("""
+<style>
 
-# ==============================
-# 복도 타일 / 원근선
-# ==============================
+html, body, [class*="css"] {
+    margin: 0;
+    padding: 0;
+}
 
-for i in range(1, 8):
+.stApp {
+    background: #050708;
+}
 
-    y = 300 + i * 55
+/* 기본 여백 제거 */
+.block-container {
+    padding: 0 !important;
+    max-width: 100% !important;
+}
 
-    canvas.create_line(
-        400 - i * 55,
-        y,
-        800 + i * 55,
-        y,
-        fill="#151b1d",
-        width=2
-    )
 
+/* =========================================
+   전체 화면
+========================================= */
 
-# 왼쪽 원근선
-canvas.create_line(
-    400, 300,
-    0, HEIGHT,
-    fill="#111719",
-    width=3
-)
+.game {
+    position: relative;
 
+    width: 100%;
+    height: 100vh;
 
-# 오른쪽 원근선
-canvas.create_line(
-    800, 300,
-    WIDTH, HEIGHT,
-    fill="#111719",
-    width=3
-)
+    overflow: hidden;
 
+    background:
+        linear-gradient(
+            90deg,
+            #0c1113 0%,
+            #222c30 35%,
+            #101618 50%,
+            #222c30 65%,
+            #0c1113 100%
+        );
+}
 
-# ==============================
-# 형광등
-# ==============================
 
-lights = []
+/* =========================================
+   천장
+========================================= */
 
+.ceiling {
+    position: absolute;
 
-def create_light(y, width):
+    top: 0;
+    left: 0;
 
-    light = canvas.create_rectangle(
-        WIDTH // 2 - width // 2,
-        y,
-        WIDTH // 2 + width // 2,
-        y + 6,
-        fill="#c9d0cf",
-        outline=""
-    )
+    width: 100%;
+    height: 40%;
 
-    lights.append(light)
+    background:
+        linear-gradient(
+            to bottom,
+            #111719,
+            #273135,
+            #141b1e
+        );
 
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        67% 100%,
+        33% 100%
+    );
+}
 
-create_light(70, 180)
-create_light(175, 120)
-create_light(250, 75)
 
+/* =========================================
+   왼쪽 벽
+========================================= */
 
-# ==============================
-# 제목
-# ==============================
+.wall-left {
+    position: absolute;
 
-title = canvas.create_text(
-    WIDTH // 2,
-    330,
-    text="휘명고등학교",
-    fill="#e0e5e5",
-    font=("Malgun Gothic", 54),
-)
+    left: 0;
+    top: 20%;
 
+    width: 35%;
+    height: 60%;
 
-# ==============================
-# 버튼
-# ==============================
+    background: #151d20;
 
-def button_hover(event):
+    clip-path: polygon(
+        0 0,
+        100% 25%,
+        100% 100%,
+        0 100%
+    );
+}
 
-    event.widget.configure(
-        bg="#20282a",
-        fg="#ffffff"
-    )
 
+/* =========================================
+   오른쪽 벽
+========================================= */
 
-def button_leave(event):
+.wall-right {
+    position: absolute;
 
-    event.widget.configure(
-        bg="#080b0c",
-        fg="#cfd5d5"
-    )
+    right: 0;
+    top: 20%;
 
+    width: 35%;
+    height: 60%;
 
-def new_game():
+    background: #151d20;
 
-    name_screen()
+    clip-path: polygon(
+        0 25%,
+        100% 0,
+        100% 100%,
+        0 100%
+    );
+}
 
 
-def continue_game():
+/* =========================================
+   복도 끝
+========================================= */
 
-    message = tk.Label(
-        root,
-        text="저장된 게임이 없습니다.",
-        bg="#050708",
-        fg="#d5dddd",
-        font=("Malgun Gothic", 16)
-    )
+.hall-end {
+    position: absolute;
 
-    message.place(
-        relx=0.5,
-        rely=0.85,
-        anchor="center"
-    )
+    left: 50%;
+    top: 27%;
 
-    root.after(
-        2000,
-        message.destroy
-    )
+    transform: translateX(-50%);
 
+    width: 18%;
+    height: 45%;
 
-# 새 게임 버튼
-new_button = tk.Button(
-    root,
-    text="새 게임 시작",
-    command=new_game,
+    background:
+        radial-gradient(
+            ellipse at center,
+            #080b0c 0%,
+            #020303 70%,
+            #000000 100%
+        );
 
-    bg="#080b0c",
-    fg="#cfd5d5",
+    box-shadow:
+        0 0 80px rgba(0,0,0,0.9),
+        inset 0 0 60px #000;
+}
 
-    activebackground="#20282a",
-    activeforeground="#ffffff",
 
-    relief="flat",
-    bd=0,
+/* =========================================
+   바닥
+========================================= */
 
-    width=18,
-    height=2,
+.floor {
+    position: absolute;
 
-    font=("Malgun Gothic", 15)
-)
+    left: 0;
+    bottom: 0;
 
-new_button.place(
-    relx=0.5,
-    rely=0.65,
-    anchor="center"
-)
+    width: 100%;
+    height: 50%;
 
+    background:
+        linear-gradient(
+            to bottom,
+            #242c2f,
+            #0b0f11
+        );
 
-# 이어하기 버튼
-continue_button = tk.Button(
-    root,
-    text="이어서 하기",
-    command=continue_game,
+    clip-path: polygon(
+        33% 0,
+        67% 0,
+        100% 100%,
+        0 100%
+    );
+}
 
-    bg="#080b0c",
-    fg="#cfd5d5",
 
-    activebackground="#20282a",
-    activeforeground="#ffffff",
+/* =========================================
+   형광등
+========================================= */
 
-    relief="flat",
-    bd=0,
+.light {
+    position: absolute;
 
-    width=18,
-    height=2,
+    left: 50%;
 
-    font=("Malgun Gothic", 15)
-)
+    transform: translateX(-50%);
 
-continue_button.place(
-    relx=0.5,
-    rely=0.74,
-    anchor="center"
-)
+    height: 6px;
 
+    background: #cbd3d2;
 
-new_button.bind(
-    "<Enter>",
-    button_hover
-)
+    box-shadow:
+        0 0 12px rgba(220,235,235,0.6),
+        0 0 35px rgba(180,210,210,0.2);
+}
 
-new_button.bind(
-    "<Leave>",
-    button_leave
-)
+.light1 {
+    top: 10%;
+    width: 15%;
+    opacity: 0.45;
+}
 
-continue_button.bind(
-    "<Enter>",
-    button_hover
-)
+.light2 {
+    top: 21%;
+    width: 10%;
+    opacity: 0.35;
+}
 
-continue_button.bind(
-    "<Leave>",
-    button_leave
-)
+.light3 {
+    top: 30%;
+    width: 6%;
+    opacity: 0.25;
+}
 
 
-# ==============================
-# 이름 입력 화면
-# ==============================
+/* =========================================
+   어두운 가장자리
+========================================= */
 
-def name_screen():
+.darkness {
+    position: absolute;
 
-    # 기존 화면 숨기기
-    new_button.place_forget()
-    continue_button.place_forget()
+    inset: 0;
 
-    canvas.itemconfig(
-        title,
-        state="hidden"
-    )
+    background:
+        radial-gradient(
+            ellipse at center,
+            transparent 15%,
+            rgba(0,0,0,0.3) 55%,
+            rgba(0,0,0,0.88) 100%
+        );
 
-    # 화면 어둡게
-    overlay = tk.Frame(
-        root,
-        bg="#050708"
-    )
+    pointer-events: none;
+}
 
-    overlay.place(
-        x=0,
-        y=0,
-        width=WIDTH,
-        height=HEIGHT
-    )
 
+/* =========================================
+   메뉴
+========================================= */
 
-    label = tk.Label(
-        overlay,
-        text="당신의 이름을 입력하세요",
-        bg="#050708",
-        fg="#dfe5e5",
-        font=("Malgun Gothic", 24)
-    )
+.menu {
+    position: absolute;
 
-    label.place(
-        relx=0.5,
-        rely=0.40,
-        anchor="center"
-    )
+    left: 50%;
+    top: 50%;
 
+    transform: translate(-50%, -50%);
 
-    entry = tk.Entry(
-        overlay,
-        bg="#111719",
-        fg="#ffffff",
-        insertbackground="#ffffff",
+    text-align: center;
 
-        relief="flat",
-        justify="center",
+    width: 100%;
 
-        font=("Malgun Gothic", 18),
+    z-index: 10;
+}
 
-        width=20
-    )
 
-    entry.place(
-        relx=0.5,
-        rely=0.50,
-        anchor="center"
-    )
+/* 제목 */
 
-    entry.focus()
+.title {
+    color: #e1e6e6;
 
+    font-family:
+        "Noto Serif KR",
+        "Malgun Gothic",
+        serif;
 
-    def start_game():
+    font-size: clamp(40px, 6vw, 80px);
 
-        player_name = entry.get().strip()
+    font-weight: 400;
 
-        if player_name == "":
-            player_name = "학생"
+    letter-spacing: 14px;
 
-        overlay.destroy()
+    text-shadow:
+        0 0 15px rgba(255,255,255,0.12);
+}
 
-        start_game_screen(player_name)
 
+/* =========================================
+   버튼
+========================================= */
 
-    start_button = tk.Button(
-        overlay,
-        text="시작",
-        command=start_game,
+.stButton > button {
 
-        bg="#111719",
-        fg="#dfe5e5",
+    width: 250px !important;
+    height: 55px !important;
 
-        activebackground="#263033",
-        activeforeground="#ffffff",
+    background: rgba(5,8,9,0.75) !important;
 
-        relief="flat",
-        bd=0,
+    color: #d8dfdf !important;
 
-        width=12,
-        height=2,
+    border: 1px solid rgba(210,220,220,0.3) !important;
 
-        font=("Malgun Gothic", 14)
-    )
+    border-radius: 0 !important;
 
-    start_button.place(
-        relx=0.5,
-        rely=0.60,
-        anchor="center"
-    )
+    font-family:
+        "Malgun Gothic",
+        sans-serif !important;
 
+    font-size: 16px !important;
 
-# ==============================
-# 게임 시작 화면
-# ==============================
+    letter-spacing: 4px !important;
 
-def start_game_screen(player_name):
+    transition: all 0.3s ease !important;
+}
 
-    for widget in root.winfo_children():
 
-        if isinstance(widget, tk.Button):
-            widget.place_forget()
+.stButton > button:hover {
 
-    canvas.delete("all")
+    background: rgba(180,200,200,0.12) !important;
 
-    canvas.create_rectangle(
-        0, 0,
-        WIDTH, HEIGHT,
-        fill="#050708",
-        outline=""
-    )
+    border-color: rgba(230,240,240,0.7) !important;
 
-    canvas.create_text(
-        WIDTH // 2,
-        HEIGHT // 2 - 60,
-        text=f"{player_name}의 이야기",
-        fill="#dfe5e5",
-        font=("Malgun Gothic", 32)
-    )
+    color: white !important;
 
-    canvas.create_text(
-        WIDTH // 2,
-        HEIGHT // 2 + 10,
-        text="휘명고등학교",
-        fill="#899494",
-        font=("Malgun Gothic", 18)
-    )
+    transform: translateY(-2px);
+}
 
-    canvas.create_text(
-        WIDTH // 2,
-        HEIGHT // 2 + 80,
-        text="게임이 시작됩니다...",
-        fill="#606b6b",
-        font=("Malgun Gothic", 14)
-    )
 
+/* 버튼 간격 */
 
-# ==============================
-# 형광등 깜빡임
-# ==============================
+.buttons {
+    margin-top: 70px;
+}
 
-def flicker():
 
-    for light in lights:
+/* =========================================
+   이름 입력 화면
+========================================= */
 
-        if math.floor(root.tk.call("after", "info") if False else 0):
+.name-screen {
 
-            pass
+    position: absolute;
 
-    # 아주 가끔 밝기가 변하는 효과
-    import random
+    inset: 0;
 
-    for light in lights:
+    z-index: 20;
 
-        value = random.choice([
-            "#c9d0cf",
-            "#c9d0cf",
-            "#aeb6b5",
-            "#727b7b"
-        ])
+    background:
+        radial-gradient(
+            ellipse at center,
+            #111719,
+            #020304
+        );
 
-        canvas.itemconfig(
-            light,
-            fill=value
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    text-align: center;
+}
+
+
+.name-title {
+
+    color: #dfe5e5;
+
+    font-size: 26px;
+
+    letter-spacing: 3px;
+
+    margin-bottom: 30px;
+}
+
+</style>
+""", unsafe_allow_html=True)
+
+
+# ==========================================
+# 세션 상태
+# ==========================================
+
+if "screen" not in st.session_state:
+    st.session_state.screen = "menu"
+
+if "player_name" not in st.session_state:
+    st.session_state.player_name = ""
+
+
+# ==========================================
+# 메인 메뉴
+# ==========================================
+
+if st.session_state.screen == "menu":
+
+    st.markdown("""
+    <div class="game">
+
+        <div class="ceiling"></div>
+
+        <div class="wall-left"></div>
+
+        <div class="wall-right"></div>
+
+        <div class="hall-end"></div>
+
+        <div class="floor"></div>
+
+        <div class="light light1"></div>
+        <div class="light light2"></div>
+        <div class="light light3"></div>
+
+        <div class="darkness"></div>
+
+        <div class="menu">
+
+            <div class="title">
+                휘명고등학교
+            </div>
+
+        </div>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+
+    # 버튼을 화면 아래쪽에 배치
+    col1, col2, col3 = st.columns([1, 1, 1])
+
+    with col2:
+
+        st.markdown(
+            '<div class="buttons"></div>',
+            unsafe_allow_html=True
         )
 
-    root.after(
-        random.randint(300, 1500),
-        flicker
+        if st.button(
+            "새 게임 시작",
+            use_container_width=True
+        ):
+            st.session_state.screen = "name"
+            st.rerun()
+
+
+        if st.button(
+            "이어서 하기",
+            use_container_width=True
+        ):
+            st.info("저장된 게임이 없습니다.")
+
+
+# ==========================================
+# 이름 입력
+# ==========================================
+
+elif st.session_state.screen == "name":
+
+    st.markdown("""
+    <div class="name-screen">
+
+        <div>
+
+            <div class="name-title">
+                당신의 이름을 입력하세요
+            </div>
+
+        </div>
+
+    </div>
+    """, unsafe_allow_html=True)
+
+
+    name = st.text_input(
+        "이름",
+        placeholder="이름을 입력하세요",
+        label_visibility="collapsed"
     )
 
 
-flicker()
+    if st.button("게임 시작"):
+
+        if name.strip() == "":
+            st.warning("이름을 입력해주세요.")
+
+        else:
+
+            st.session_state.player_name = name.strip()
+
+            st.session_state.screen = "game"
+
+            st.rerun()
 
 
-# ==============================
-# 실행
-# ==============================
+# ==========================================
+# 게임 시작
+# ==========================================
 
-root.mainloop()
+elif st.session_state.screen == "game":
+
+    st.markdown("""
+    <style>
+
+    .game-start {
+
+        height: 80vh;
+
+        display: flex;
+
+        flex-direction: column;
+
+        justify-content: center;
+
+        align-items: center;
+
+        background: #050708;
+
+        color: #dfe5e5;
+
+        text-align: center;
+
+    }
+
+    </style>
+    """, unsafe_allow_html=True)
+
+
+    st.markdown(
+        f"""
+        <div class="game-start">
+
+            <div style="font-size:34px;">
+                {st.session_state.player_name}의 이야기
+            </div>
+
+            <div style="
+                margin-top:25px;
+                font-size:18px;
+                color:#737e7e;
+            ">
+                휘명고등학교
+            </div>
+
+            <div style="
+                margin-top:70px;
+                font-size:14px;
+                color:#505959;
+            ">
+                게임이 시작됩니다...
+            </div>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
