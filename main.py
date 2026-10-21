@@ -1,233 +1,136 @@
-import random
 import streamlit as st
 
-# 1. 페이지 설정
+# 1. 페이지 기본 설정 (와이드 모드, 깔끔한 브라우저 탭 제목)
 st.set_page_config(
-    page_title="모닥불 키우기",
-    page_icon="🔥",
-    layout="centered",
+    page_title="Letter Mailbox",
+    page_icon="💌",
+    layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# ---------------------------------------------------------
-# 커스텀 이미지 URL 설정 (본인 이미지로 교체 가능)
-# ---------------------------------------------------------
-# 숲 배경 이미지 (Unsplash 무료 이미지)
-BG_IMAGE_URL = "https://images.unsplash.com/photo-1511497584788-8767611136f6?q=80&w=1200&auto=format&fit=crop"
-
-# 타오르는 모닥불 GIF 이미지
-FIRE_GIF_URL = "https://media.giphy.com/media/3o72FfM5HJydzaMpf2/giphy.gif"
-
-
-# 2. CSS 스타일링 (스크롤 방지 콤팩트 레이아웃 + 숲 배경)
+# 2. 디자인 스타일 적용 (CSS)
 st.markdown(
-    f"""
+    """
     <style>
-    /* 전체 배경을 숲 이미지로 설정 */
-    .stApp {{
-        background: linear-gradient(rgba(18, 22, 31, 0.75), rgba(18, 22, 31, 0.85)),
-                    url('{BG_IMAGE_URL}');
-        background-size: cover;
-        background-position: center;
-        background-repeat: no-repeat;
-        color: #e2e8f0;
-    }}
-    header, footer {{ visibility: hidden; }}
+    /* 전체 앱 배경색: 따뜻한 연두색 */
+    .stApp {
+        background-color: #DCE7C8;
+    }
+    header, footer { visibility: hidden; }
 
-    /* 메인 블록 여백 줄이기 (스크롤 방지 핵심) */
-    .block-container {{
-        padding-top: 2rem !important;
-        padding-bottom: 1rem !important;
-        max-width: 650px !important;
-    }}
+    /* 메인 컨테이너 중앙 정렬 및 레이아웃 */
+    .main-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-top: 30px;
+    }
 
-    /* 중앙 모닥불 영역 */
-    .fire-container {{
-        text-align: center;
-        margin-top: 10px;
-        margin-bottom: 10px;
-    }}
-    .fire-img {{
-        width: 130px;
-        height: 130px;
-        object-fit: contain;
-        filter: drop-shadow(0 0 18px rgba(255, 165, 0, 0.8));
-    }}
-    .fire-title {{
-        font-size: 1.5rem;
-        font-weight: 700;
-        color: #ffb703;
-        margin-top: 5px;
-    }}
-    .fire-stats {{
-        font-size: 0.9rem;
-        color: #ffaaa5;
-        font-weight: 600;
-        margin-top: 2px;
-    }}
-
-    /* 탐색 버튼 콤팩트 디자인 */
-    div[data-testid="stButton"] > button.gather-btn {{
-        background-color: #2d3748 !important;
-        color: #e2e8f0 !important;
-        border: 1px solid #4a5568 !important;
-        padding: 4px 12px !important;
-        font-size: 0.85rem !important;
-        height: auto !important;
-        aspect-ratio: auto !important;
-        border-radius: 6px !important;
+    /* 빨간 우체통 컨테이너 (화면의 약 1/3 크기감 연출) */
+    .mailbox-container {
+        width: 100%;
+        max-width: 420px;
+        background: linear-gradient(135deg, #E54B4B, #C23838);
+        border-radius: 24px;
+        padding: 30px 20px 40px 20px;
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
         margin: 0 auto;
-        display: block;
-    }}
-    div[data-testid="stButton"] > button.gather-btn:hover {{
-        background-color: #4a5568 !important;
-        border-color: #ffb703 !important;
-    }}
+    }
 
-    /* 하단 인벤토리 슬롯 (정사각형 버튼) */
-    .stButton > button {{
-        width: 100% !important;
-        aspect-ratio: 1 / 1 !important;
-        height: auto !important;
-        background-color: rgba(30, 37, 50, 0.85) !important;
-        border: 2px solid #3b475d !important;
-        border-radius: 8px !important;
-        color: #e2e8f0 !important;
-        font-size: 1.1rem !important;
-        padding: 0 !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        line-height: 1.1 !important;
-        transition: all 0.15s ease !important;
-    }}
-    .stButton > button:hover {{
-        border-color: #ffb703 !important;
-        background-color: rgba(38, 48, 66, 0.95) !important;
-    }}
+    /* 우체통 투입구 장식 */
+    .mailbox-slot {
+        width: 120px;
+        height: 10px;
+        background-color: #331A1A;
+        border-radius: 5px;
+        margin-bottom: 25px;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    }
 
-    .inventory-title {{
-        font-size: 0.85rem;
-        color: #cbd5e0;
-        margin-top: 15px;
-        margin-bottom: 8px;
-        text-align: center;
-    }}
+    /* 분홍색 편지지 네모 박스 스타일 */
+    .letter-paper {
+        background-color: #FFF0F3;
+        border: 2px dashed #FFB3C1;
+        border-radius: 16px;
+        padding: 25px;
+        width: 100%;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+    }
+
+    /* 스트림릿 기본 text_area 내부 스타일 조정 */
+    textarea {
+        background-color: #FFFFFF !important;
+        color: #4A4A4A !important;
+        font-family: 'Courier New', monospace, sans-serif !important;
+        font-size: 1.05rem !important;
+        border-radius: 12px !important;
+        border: 1px solid #FFC2D1 !important;
+        padding: 15px !important;
+    }
     
-    /* Divider 간격 감소 */
-    hr {{
-        margin: 10px 0 !important;
-    }}
+    /* 타이틀 텍스트 스타일 */
+    .mailbox-title {
+        color: #FFFFFF;
+        font-weight: 700;
+        font-size: 1.5rem;
+        margin-bottom: 5px;
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        text-align: center;
+    }
+    
+    .mailbox-subtitle {
+        color: #FFE5EC;
+        font-size: 0.9rem;
+        margin-bottom: 20px;
+        text-align: center;
+    }
     </style>
 """,
     unsafe_allow_html=True,
 )
 
-# 3. 게임 세션 상태 초기화
-if "fire_level" not in st.session_state:
-    st.session_state.fire_level = 10
-
-if "inventory" not in st.session_state:
-    st.session_state.inventory = [
-        {"icon": "🪵", "name": "장작", "count": 3, "value": 10},
-        {"icon": "🍄", "name": "버섯", "count": 1, "value": 5},
-        None,
-        None,
-        None,
-        None,
-        None,
-        None,
-    ]
-
-if "log_msg" not in st.session_state:
-    st.session_state.log_msg = "숲속의 조용한 밤, 모닥불이 피어오릅니다."
-
-
-# --- 게임 로직 함수 ---
-def use_item(index):
-    item = st.session_state.inventory[index]
-    if item:
-        st.session_state.fire_level += item["value"]
-        item["count"] -= 1
-        st.session_state.log_msg = (
-            f"🔥 {item['name']}을(를) 모닥불에 넣어 온기 +{item['value']}℃"
-        )
-
-        if item["count"] <= 0:
-            st.session_state.inventory[index] = None
-
-
-def gather_resource():
-    item_pool = [
-        {"icon": "🪵", "name": "장작", "count": 1, "value": 10},
-        {"icon": "🍄", "name": "버섯", "count": 1, "value": 5},
-        {"icon": "🌿", "name": "약초", "count": 1, "value": 8},
-    ]
-    found = random.choice(item_pool)
-
-    for slot in st.session_state.inventory:
-        if slot and slot["name"] == found["name"]:
-            slot["count"] += 1
-            st.session_state.log_msg = (
-                f"🌲 탐색 결과: {found['icon']} {found['name']} 획득!"
-            )
-            return
-
-    for i in range(8):
-        if st.session_state.inventory[i] is None:
-            st.session_state.inventory[i] = found.copy()
-            st.session_state.log_msg = (
-                f"🌲 탐색 결과: {found['icon']} {found['name']} 획득!"
-            )
-            return
-
-    st.session_state.log_msg = "🎒 가방이 가득 찼습니다!"
-
-
 # ---------------------------------------------------------
-# 화면 레이아웃 구성
+# 3. 화면 UI 구성
 # ---------------------------------------------------------
+st.markdown('<div class="main-wrapper">', unsafe_allow_html=True)
 
-# 1. 중앙 모닥불 (GIF 이미지 적용)
+# HTML/CSS 구조를 활용한 빨간 우체통 프레임 및 분홍 편지지 박스
 st.markdown(
-    f"""
-    <div class="fire-container">
-        <img src="{FIRE_GIF_URL}" class="fire-img" alt="모닥불" />
-        <div class="fire-title">작은 모닥불</div>
-        <div class="fire-stats">온기: {st.session_state.fire_level} ℃</div>
-    </div>
-""",
+    """
+    <div class="mailbox-container">
+        <div class="mailbox-title">📬 소중한 마음 우체통</div>
+        <div class="mailbox-subtitle">마음속 이야기를 편지에 담아 쏙 넣어주세요</div>
+        <div class="mailbox-slot"></div>
+    """,
     unsafe_allow_html=True,
 )
 
-# 알림 메시지 (상단 배치)
-st.info(st.session_state.log_msg)
-
-# 2. 작은 탐색 버튼
-col_left, col_btn, col_right = st.columns([1, 2, 1])
-with col_btn:
-    if st.button("🌲 주변 탐색 (아이템 채집)", key="gather_btn"):
-        gather_resource()
-        st.rerun()
-
-st.divider()
-
-# 3. 하단 인벤토리 (8칸)
-st.markdown(
-    '<div class="inventory-title">🎒 가방 (아이템 클릭 시 모닥불에 사용)</div>',
-    unsafe_allow_html=True,
+# 분홍색 편지지 박스 안쪽 영역에 들어갈 플레이어 텍스트 입력창
+st.markdown('<div class="letter-paper">', unsafe_allow_html=True)
+user_message = st.text_area(
+    "편지 내용 작성",
+    height=180,
+    placeholder="여기에 편지 내용을 자유롭게 적어보세요...",
+    label_visibility="collapsed",
 )
+st.markdown("</div>", unsafe_allow_html=True)  # letter-paper 닫기
 
-cols = st.columns(8)
+st.markdown("</div>", unsafe_allow_html=True)  # mailbox-container 닫기
+st.markdown("</div>", unsafe_allow_html=True)  # main-wrapper 닫기
 
-for i in range(8):
-    item = st.session_state.inventory[i]
-    with cols[i]:
-        if item:
-            button_label = f"{item['icon']}\nx{item['count']}"
-            if st.button(button_label, key=f"slot_{i}"):
-                use_item(i)
-                st.rerun()
-        else:
-            st.button(f"{i+1}", key=f"slot_{i}", disabled=True)
+# ---------------------------------------------------------
+# 4. 하단 부가 기능 (입력한 글자 수 확인 등)
+# ---------------------------------------------------------
+if user_message:
+    st.write("")
+    col1, col2 = st.columns([3, 1])
+    with col1:
+        st.info(f"현재 작성 중인 편지 글자 수: **{len(user_message)}자**")
+    with col2:
+        if st.button("우체통에 넣기 ✈️", use_container_width=True):
+            st.success("편지가 안전하게 접수되었습니다!")
