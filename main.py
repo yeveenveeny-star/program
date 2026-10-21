@@ -18,14 +18,14 @@ st.markdown(
     }
     header, footer { visibility: hidden; }
 
-    /* 메인 화면 중앙 정렬 컨테이너 */
+    /* 화면 전체를 중앙 정렬하는 Flex 컨테이너 */
     .main-container {
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        max-width: 550px;
-        margin: 30px auto;
+        max-width: 600px;
+        margin: 40px auto;
     }
 
     /* 우체통 전체 (헤드 + 몸통 + 받침대) */
@@ -97,17 +97,23 @@ st.markdown(
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 
+    /* 텍스트 입력 영역을 감싸는 컨테이너 (화면의 약 1/3 너비인 320px 고정 및 중앙 정렬) */
+    .input-wrapper {
+        width: 320px;
+        max-width: 100%;
+    }
+
     /* 텍스트 입력창 스타일 커스텀 */
     div.stTextArea textarea {
         background-color: #FFFFFF !important;
         color: #4A4A4A !important;
         font-family: 'Malgun Gothic', sans-serif !important;
-        font-size: 1rem !important;
-        border-radius: 16px !important;
+        font-size: 0.95rem !important;
+        border-radius: 14px !important;
         border: 2px solid #C8D6B9 !important;
-        padding: 15px !important;
-        line-height: 1.6 !important;
-        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
+        padding: 12px !important;
+        line-height: 1.5 !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
     }
     
     /* 스트림릿 기본 라벨 숨기기 */
@@ -140,12 +146,14 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 2) 박스 없이 깔끔한 텍스트 입력 영역
+# 2) 크기가 줄어든 텍스트 입력 영역 (중앙 배치)
+st.markdown('<div class="input-wrapper">', unsafe_allow_html=True)
 user_message = st.text_area(
     "letter_input",
-    height=160,
+    height=120,
     placeholder="이곳에 편지 내용을 적어보세요...",
 )
+st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("</div>", unsafe_allow_html=True)  # main-container 닫기
 
@@ -154,9 +162,10 @@ st.markdown("</div>", unsafe_allow_html=True)  # main-container 닫기
 # ---------------------------------------------------------
 if user_message:
     st.write("")
-    col1, col2 = st.columns([3, 1])
+    # 하단 정보도 중앙 폭에 맞춰 정렬되도록 구성
+    col1, col2 = st.columns([2, 1])
     with col1:
-        st.info(f"작성 중인 편지 글자 수: **{len(user_message)}자**")
+        st.info(f"글자 수: **{len(user_message)}자**")
     with col2:
-        if st.button("우체통에 넣기 ✈️", use_container_width=True):
-            st.success("편지가 우체통에 넣어졌습니다!")
+        if st.button("우체통 넣기 ✈️", use_container_width=True):
+            st.success("접수 완료!")
