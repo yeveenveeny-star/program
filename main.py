@@ -33,7 +33,7 @@ st.markdown(
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 20px;
+        margin-bottom: 25px;
     }
 
     /* 1) 우체통 상단 (둥근 뚜껑) */
@@ -97,26 +97,17 @@ st.markdown(
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 
-    /* 분홍색 편지지 네모 박스 (입력 영역) */
-    .letter-box {
-        background-color: #FFF0F3;
-        border: 3px dashed #FFB3C1;
-        border-radius: 20px;
-        padding: 20px;
-        width: 100%;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-    }
-
-    /* 분홍 박스 내 텍스트 입력창 커스텀 */
+    /* 텍스트 입력창 스타일 커스텀 */
     div.stTextArea textarea {
         background-color: #FFFFFF !important;
         color: #4A4A4A !important;
         font-family: 'Malgun Gothic', sans-serif !important;
         font-size: 1rem !important;
-        border-radius: 12px !important;
-        border: 1px solid #FFC2D1 !important;
+        border-radius: 16px !important;
+        border: 2px solid #C8D6B9 !important;
         padding: 15px !important;
         line-height: 1.6 !important;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.05);
     }
     
     /* 스트림릿 기본 라벨 숨기기 */
@@ -149,16 +140,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# 2) 분홍색 네모 박스 내부 텍스트 입력 영역
-st.markdown('<div class="letter-box">', unsafe_allow_html=True)
-
+# 2) 박스 없이 깔끔한 텍스트 입력 영역
 user_message = st.text_area(
     "letter_input",
-    height=180,
-    placeholder="분홍색 편지지에 내용을 직접 적어보세요...",
+    height=160,
+    placeholder="이곳에 편지 내용을 적어보세요...",
 )
 
-st.markdown("</div>", unsafe_allow_html=True)  # letter-box 닫기
 st.markdown("</div>", unsafe_allow_html=True)  # main-container 닫기
 
 # ---------------------------------------------------------
