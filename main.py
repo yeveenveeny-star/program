@@ -19,16 +19,28 @@ st.markdown(
     }
     header, footer { visibility: hidden; }
 
-    /* 화면 전체를 중앙 정렬하는 Flex 컨테이너 */
+    /* 화면 전체를 중앙 정렬하는 Flex 컨테이너 (상단 배치용) */
     .main-container {
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         max-width: 600px;
         margin: 20px auto 0 auto;
         position: relative;
         z-index: 2;
+    }
+
+    /* 화면 하단에 고정될 우체통 컨테이너 */
+    .mailbox-bottom-container {
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        z-index: 3;
     }
 
     /* 우체통 전체 (헤드 + 몸통 + 받침대) */
@@ -36,7 +48,6 @@ st.markdown(
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 20px;
     }
 
     /* 1) 우체통 상단 (둥근 뚜껑) */
@@ -116,7 +127,7 @@ st.markdown(
 
     /* 텍스트 입력 영역 전체를 화면 중앙에 160px 폭으로 고정 */
     div[data-testid="stTextArea"] {
-        width: 500px !important;
+        width: 160px !important;
         margin: 0 auto !important;
     }
 
@@ -168,25 +179,9 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
+# 1) 상단 영역: 텍스트 입력창 및 '작성 완료' 버튼 배치
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-# 1) 하늘 배경 중앙의 전체 우체통 (POST 하얀색 글씨 포함)
-st.markdown(
-    """
-    <div class="mailbox-wrapper">
-        <div class="mailbox-top"></div>
-        <div class="mailbox-body">
-            <div class="mailbox-post-text">POST</div>
-            <div class="mailbox-slot"></div>
-        </div>
-        <div class="mailbox-stand"></div>
-        <div class="mailbox-base"></div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# 2) 가로폭 160px 텍스트 입력 영역 (중앙 배치)
 user_message = st.text_area(
     "letter_input",
     height=120,
@@ -195,12 +190,29 @@ user_message = st.text_area(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 3) 화면 하단 중앙 연한 노란색 '작성 완료' 버튼 배치
 col1, col2, col3 = st.columns([1, 1.2, 1])
 with col2:
     submit_btn = st.button("작성 완료", use_container_width=True)
 
 st.markdown("</div>", unsafe_allow_html=True)
+
+# 2) 하단 영역: 우체통 전체 배치
+st.markdown(
+    """
+    <div class="mailbox-bottom-container">
+        <div class="mailbox-wrapper">
+            <div class="mailbox-top"></div>
+            <div class="mailbox-body">
+                <div class="mailbox-post-text">POST</div>
+                <div class="mailbox-slot"></div>
+            </div>
+            <div class="mailbox-stand"></div>
+            <div class="mailbox-base"></div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # ---------------------------------------------------------
 # 4. 하단 동작 처리
