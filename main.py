@@ -25,7 +25,7 @@ st.markdown(
         align-items: center;
         justify-content: center;
         max-width: 600px;
-        margin: 40px auto;
+        margin: 30px auto;
     }
 
     /* 우체통 전체 (헤드 + 몸통 + 받침대) */
@@ -33,7 +33,7 @@ st.markdown(
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-bottom: 25px;
+        margin-bottom: 20px;
     }
 
     /* 1) 우체통 상단 (둥근 뚜껑) */
@@ -109,62 +109,4 @@ st.markdown(
         color: #4A4A4A !important;
         font-family: 'Malgun Gothic', sans-serif !important;
         font-size: 0.9rem !important;
-        border-radius: 12px !important;
-        border: 2px solid #C8D6B9 !important;
-        padding: 10px !important;
-        line-height: 1.4 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-    
-    /* 스트림릿 기본 라벨 숨기기 */
-    div.stTextArea label {
-        display: none;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ---------------------------------------------------------
-# 3. 화면 UI 구성
-# ---------------------------------------------------------
-st.markdown('<div class="main-container">', unsafe_allow_html=True)
-
-# 1) 중앙 전체 우체통 (POST 하얀색 글씨 포함)
-st.markdown(
-    """
-    <div class="mailbox-wrapper">
-        <div class="mailbox-top"></div>
-        <div class="mailbox-body">
-            <div class="mailbox-post-text">POST</div>
-            <div class="mailbox-slot"></div>
-        </div>
-        <div class="mailbox-stand"></div>
-        <div class="mailbox-base"></div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# 2) 가로폭이 절반인 텍스트 입력 영역 (중앙 배치)
-st.markdown('<div class="input-wrapper">', unsafe_allow_html=True)
-user_message = st.text_area(
-    "letter_input",
-    height=120,
-    placeholder="편지 작성...",
-)
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ---------------------------------------------------------
-# 4. 하단 동작 처리
-# ---------------------------------------------------------
-if user_message:
-    st.write("")
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.info(f"글자 수: **{len(user_message)}자**")
-    with col2:
-        if st.button("우체통 넣기 ✈️", use_container_width=True):
-            st.success("접수 완료!")
+        border-
