@@ -160,11 +160,11 @@ st.markdown(
         padding: 10px 20px !important;
         width: 280px !important;
         display: block !important;
-        margin: 0 auto 0 calc(50%) !important;
+        margin: 0 auto 0 calc(50% + 140px) !important;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
         transition: all 0.2s ease-in-out;
     }
-    
+   
     div.stButton > button:hover {
         background-color: #FFEE8C !important;
         border-color: #D4C36C !important;
