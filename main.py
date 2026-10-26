@@ -12,10 +12,10 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* 전체 앱 배경색: 푸른 하늘색 */
+    /* 전체 앱 배경색: 더 연한 파스텔톤 하늘색 */
     .stApp {
-        background-color: #A0C4FF;
-        background: linear-gradient(180deg, #A0C4FF 0%, #C4DDFF 70%, #E8F1FF 100%);
+        background-color: #E2ECFD;
+        background: linear-gradient(180deg, #E2ECFD 0%, #EEF4FF 70%, #F8FBFF 100%);
     }
     header, footer { visibility: hidden; }
 
@@ -100,17 +100,17 @@ st.markdown(
         box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 
-    /* 초록 잔디밭 레이어 */
+    /* 더 연한 파스텔톤 연두색 잔디밭 레이어 */
     .grass-field {
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100vw;
         height: 160px;
-        background: linear-gradient(180deg, #70C05B 0%, #519E3E 100%);
+        background: linear-gradient(180deg, #D4EDCD 0%, #BFE5B7 100%);
         border-top-left-radius: 50% 30px;
         border-top-right-radius: 50% 30px;
-        box-shadow: inset 0 10px 15px rgba(255,255,255,0.2);
+        box-shadow: inset 0 10px 15px rgba(255,255,255,0.3);
         z-index: 1;
     }
 
@@ -127,7 +127,7 @@ st.markdown(
         font-family: 'Malgun Gothic', sans-serif !important;
         font-size: 0.9rem !important;
         border-radius: 12px !important;
-        border: 2px solid #8ECAE6 !important;
+        border: 2px solid #BFE5B7 !important;
         padding: 10px !important;
         line-height: 1.4 !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -166,11 +166,12 @@ st.markdown(
 # ---------------------------------------------------------
 
 # 하단 잔디밭 배경
-st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
+markdown_grass = '<div class="grass-field"></div>'
+st.markdown(markdown_grass, unsafe_allow_html=True)
 
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-# 1) 푸른 하늘 배경 중앙의 전체 우체통 (POST 하얀색 글씨 포함)
+# 1) 하늘 배경 중앙의 전체 우체통 (POST 하얀색 글씨 포함)
 st.markdown(
     """
     <div class="mailbox-wrapper">
