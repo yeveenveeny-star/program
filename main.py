@@ -31,10 +31,10 @@ st.markdown(
         z-index: 2;
     }
 
-    /* 화면 하단에 고정될 우체통 컨테이너 */
+    /* 화면 하단으로부터 160px 위치에 고정될 우체통 컨테이너 */
     .mailbox-bottom-container {
         position: fixed;
-        bottom: 20px;
+        bottom: 160px;
         left: 50%;
         transform: translateX(-50%);
         display: flex;
@@ -127,7 +127,7 @@ st.markdown(
 
     /* 텍스트 입력 영역 전체를 화면 중앙에 160px 폭으로 고정 */
     div[data-testid="stTextArea"] {
-        width: 300px !important;
+        width: 160px !important;
         margin: 0 auto !important;
     }
 
@@ -149,7 +149,7 @@ st.markdown(
         display: none;
     }
 
-    /* 연한 노란색 '작성 완료' 버튼 커스텀 스타일 */
+    /* 연한 노란색 '작성 완료' 버튼 (너비를 3분의 1인 33.3%로 설정 및 중앙 정렬) */
     div.stButton > button {
         background-color: #FFF3B0 !important;
         color: #5C5320 !important;
@@ -157,7 +157,10 @@ st.markdown(
         font-weight: 700 !important;
         border: 2px solid #E6D785 !important;
         border-radius: 12px !important;
-        padding: 10px 20px !important;
+        padding: 8px 10px !important;
+        width: 33.3% !important;
+        display: block !important;
+        margin: 0 auto !important;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
         transition: all 0.2s ease-in-out;
     }
@@ -179,7 +182,7 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
-# 1) 상단 영역: 텍스트 입력창 및 '작성 완료' 버튼 배치
+# 1) 상단 영역: 텍스트 입력창 및 3분의 1 너비의 '작성 완료' 버튼 배치
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 user_message = st.text_area(
@@ -190,13 +193,11 @@ user_message = st.text_area(
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-col1, col2, col3 = st.columns([1, 1.2, 1])
-with col2:
-    submit_btn = st.button("작성 완료", use_container_width=True)
+submit_btn = st.button("작성 완료")
 
 st.markdown("</div>", unsafe_allow_html=True)
 
-# 2) 하단 영역: 우체통 전체 배치
+# 2) 하단 영역: 하단에서 160px 위로 올라간 우체통 전체 배치
 st.markdown(
     """
     <div class="mailbox-bottom-container">
