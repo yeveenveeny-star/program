@@ -192,7 +192,6 @@ st.markdown('<div class="input-wrapper">', unsafe_allow_html=True)
 user_message = st.text_area(
     "letter_input",
     height=120,
-    width: 300px;
     placeholder="편지 작성...",
 )
 st.markdown("</div>", unsafe_allow_html=True)
