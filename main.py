@@ -160,7 +160,7 @@ st.markdown(
         padding: 10px 20px !important;
         width: 280px !important;
         display: block !important;
-        margin: 0 auto 0 calc(50% + 280px) !important;
+        margin: 0 auto 0 calc(50% + 350px) !important;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
         transition: all 0.2s ease-in-out;
     }
