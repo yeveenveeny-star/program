@@ -19,6 +19,58 @@ st.markdown(
     }
     header, footer { visibility: hidden; }
 
+    /* 하늘 위 둥실 떠 있는 구름 배경 컨테이너 */
+    .sky-clouds {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: 1;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    /* 순수 CSS로 그린 감성적인 구름 스타일 */
+    .cloud {
+        position: absolute;
+        background: #FFFFFF;
+        border-radius: 100px;
+        opacity: 0.75;
+    }
+    .cloud::before, .cloud::after {
+        content: '';
+        position: absolute;
+        background: #FFFFFF;
+        border-radius: 50%;
+    }
+
+    /* 구름 1 (좌측 상단) */
+    .cloud-1 {
+        width: 140px; height: 45px;
+        top: 15%; left: 12%;
+    }
+    .cloud-1::before { width: 60px; height: 60px; top: -30px; left: 20px; }
+    .cloud-1::after { width: 80px; height: 80px; top: -45px; left: 55px; }
+
+    /* 구름 2 (우측 상단, 조금 크게) */
+    .cloud-2 {
+        width: 200px; height: 60px;
+        top: 20%; right: 10%;
+        opacity: 0.6;
+    }
+    .cloud-2::before { width: 80px; height: 80px; top: -40px; left: 35px; }
+    .cloud-2::after { width: 100px; height: 100px; top: -55px; left: 85px; }
+
+    /* 구름 3 (중앙 좌측 부근) */
+    .cloud-3 {
+        width: 120px; height: 40px;
+        top: 45%; left: 8%;
+        opacity: 0.5;
+    }
+    .cloud-3::before { width: 50px; height: 50px; top: -25px; left: 20px; }
+    .cloud-3::after { width: 65px; height: 65px; top: -35px; left: 45px; }
+
     /* 화면 전체를 중앙 정렬하는 Flex 컨테이너 (상단 배치용) */
     .main-container {
         display: flex;
@@ -125,14 +177,14 @@ st.markdown(
         z-index: 1;
     }
 
-    /* 텍스트 입력 영역 전체를 화면 중앙에 300px 폭, 높이 100px로 고정 */
+    /* 텍스트 입력 영역 전체 폭 300px, 높이 100px 고정 */
     div[data-testid="stTextArea"] {
         width: 300px !important;
         height: 100px !important;
         margin: 0 auto !important;
     }
 
-    /* 텍스트 입력창 내부 textarea 높이 고정 */
+    /* 텍스트 입력창 내부 스타일 커스텀 */
     div.stTextArea textarea {
         background-color: #FFFFFF !important;
         color: #4A4A4A !important;
@@ -181,6 +233,18 @@ st.markdown(
 # ---------------------------------------------------------
 # 3. 화면 UI 구성
 # ---------------------------------------------------------
+
+# 하늘 배경 위 구름 추가
+st.markdown(
+    """
+    <div class="sky-clouds">
+        <div class="cloud cloud-1"></div>
+        <div class="cloud cloud-2"></div>
+        <div class="cloud cloud-3"></div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
 
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
