@@ -127,7 +127,7 @@ st.markdown(
 
     /* 텍스트 입력 영역 전체를 화면 중앙에 160px 폭으로 고정 */
     div[data-testid="stTextArea"] {
-        width: 160px !important;
+        width: 300px !important;
         margin: 0 auto !important;
     }
 
