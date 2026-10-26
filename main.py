@@ -106,7 +106,7 @@ st.markdown(
         bottom: 0;
         left: 0;
         width: 100vw;
-        height: 350px;
+        height: 500px;
         background: linear-gradient(180deg, #D4EDCD 0%, #BFE5B7 100%);
         border-top-left-radius: 50% 30px;
         border-top-right-radius: 50% 30px;
