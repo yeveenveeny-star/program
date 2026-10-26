@@ -8,6 +8,10 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
+# 세션 상태 초기화 (편지 제출 여부 저장)
+if "submitted" not in st.session_state:
+    st.session_state.submitted = False
+
 # 2. 디자인 스타일 적용 (CSS)
 st.markdown(
     """
@@ -225,6 +229,34 @@ st.markdown(
         border-color: #D4C36C !important;
         color: #423B14 !important;
     }
+
+    /* 편지 모양 아이콘 스타일 (입력창과 버튼이 사라진 그 자리에 표시) */
+    .letter-envelope {
+        width: 220px;
+        height: 140px;
+        background-color: #FFFDF9;
+        border: 2px solid #E6D785;
+        border-radius: 12px;
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin: 20px auto 0 auto;
+        position: relative;
+        z-index: 2;
+    }
+    .letter-envelope::before {
+        content: '✉️';
+        font-size: 3.5rem;
+        margin-bottom: 8px;
+    }
+    .letter-envelope-text {
+        font-family: 'Malgun Gothic', sans-serif;
+        font-size: 0.95rem;
+        font-weight: 700;
+        color: #5C5320;
+    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -249,18 +281,36 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
-# 1) 상단 영역: 텍스트 입력창 및 '작성 완료' 버튼 배치
+# 1) 상단 영역: 제출 여부에 따라 텍스트 입력창/버튼 혹은 편지 모양 표시
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
-user_message = st.text_area(
-    "letter_input",
-    height=100,
-    placeholder="편지 작성...",
-)
+if not st.session_state.submitted:
+    user_message = st.text_area(
+        "letter_input",
+        height=100,
+        placeholder="편지 작성...",
+    )
 
-st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("<br>", unsafe_allow_html=True)
 
-submit_btn = st.button("작성 완료")
+    submit_btn = st.button("작성 완료")
+
+    if submit_btn:
+        if user_message:
+            st.session_state.submitted = True
+            st.rerun()
+        else:
+            st.warning("내용을 입력해주세요!")
+else:
+    # 텍스트 영역과 버튼이 사라진 그 자리에 표시되는 편지 모양
+    st.markdown(
+        """
+        <div class="letter-envelope">
+            <div class="letter-envelope-text">작성된 편지 보관 중</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.markdown("</div>", unsafe_allow_html=True)
 
@@ -281,12 +331,3 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
-
-# ---------------------------------------------------------
-# 4. 하단 동작 처리
-# ---------------------------------------------------------
-if submit_btn:
-    if user_message:
-        st.success("편지가 작성 완료되었습니다!")
-    else:
-        st.warning("내용을 입력해주세요!")
