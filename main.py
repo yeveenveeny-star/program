@@ -106,7 +106,7 @@ st.markdown(
         bottom: 0;
         left: 0;
         width: 100vw;
-        height: 500px;
+        height: 160px;
         background: linear-gradient(180deg, #D4EDCD 0%, #BFE5B7 100%);
         border-top-left-radius: 50% 30px;
         border-top-right-radius: 50% 30px;
@@ -114,10 +114,10 @@ st.markdown(
         z-index: 1;
     }
 
-    /* 텍스트 입력 영역 너비 (160px) 및 중앙 정렬 */
-    .input-wrapper {
-        width: 160px;
-        max-width: 100%;
+    /* 텍스트 입력 영역 전체를 화면 중앙에 160px 폭으로 고정 */
+    div[data-testid="stTextArea"] {
+        width: 160px !important;
+        margin: 0 auto !important;
     }
 
     /* 텍스트 입력창 스타일 커스텀 */
@@ -166,8 +166,7 @@ st.markdown(
 # ---------------------------------------------------------
 
 # 하단 잔디밭 배경
-markdown_grass = '<div class="grass-field"></div>'
-st.markdown(markdown_grass, unsafe_allow_html=True)
+st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
@@ -188,13 +187,11 @@ st.markdown(
 )
 
 # 2) 가로폭 160px 텍스트 입력 영역 (중앙 배치)
-st.markdown('<div class="input-wrapper">', unsafe_allow_html=True)
 user_message = st.text_area(
     "letter_input",
     height=120,
     placeholder="편지 작성...",
 )
-st.markdown("</div>", unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
