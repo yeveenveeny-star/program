@@ -12,9 +12,10 @@ st.set_page_config(
 st.markdown(
     """
     <style>
-    /* 전체 앱 배경색: 따뜻한 연두색 */
+    /* 전체 앱 배경색: 푸른 하늘색 */
     .stApp {
-        background-color: #DCE7C8;
+        background-color: #A0C4FF;
+        background: linear-gradient(180deg, #A0C4FF 0%, #C4DDFF 70%, #E8F1FF 100%);
     }
     header, footer { visibility: hidden; }
 
@@ -25,7 +26,9 @@ st.markdown(
         align-items: center;
         justify-content: center;
         max-width: 600px;
-        margin: 30px auto;
+        margin: 20px auto 0 auto;
+        position: relative;
+        z-index: 2;
     }
 
     /* 우체통 전체 (헤드 + 몸통 + 받침대) */
@@ -81,113 +84,4 @@ st.markdown(
         box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
     }
 
-    /* 3) 우체통 기둥/받침대 */
-    .mailbox-stand {
-        width: 40px;
-        height: 35px;
-        background-color: #A32E2E;
-        box-shadow: inset 0 2px 5px rgba(0,0,0,0.3);
-    }
-    
-    .mailbox-base {
-        width: 90px;
-        height: 12px;
-        background-color: #7A2222;
-        border-radius: 6px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    /* 텍스트 입력 영역 너비를 절반(160px)으로 설정 및 중앙 정렬 */
-    .input-wrapper {
-        width: 160px;
-        max-width: 100%;
-    }
-
-    /* 텍스트 입력창 스타일 커스텀 */
-    div.stTextArea textarea {
-        background-color: #FFFFFF !important;
-        color: #4A4A4A !important;
-        font-family: 'Malgun Gothic', sans-serif !important;
-        font-size: 0.9rem !important;
-        border-radius: 12px !important;
-        border: 2px solid #C8D6B9 !important;
-        padding: 10px !important;
-        line-height: 1.4 !important;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-    }
-    
-    /* 스트림릿 기본 라벨 숨기기 */
-    div.stTextArea label {
-        display: none;
-    }
-
-    /* 연한 노란색 '작성 완료' 버튼 커스텀 스타일 */
-    div.stButton > button {
-        background-color: #FFF3B0 !important;
-        color: #5C5320 !important;
-        font-family: 'Malgun Gothic', sans-serif !important;
-        font-weight: 700 !important;
-        border: 2px solid #E6D785 !important;
-        border-radius: 12px !important;
-        padding: 10px 20px !important;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05) !important;
-        transition: all 0.2s ease-in-out;
-    }
-    
-    div.stButton > button:hover {
-        background-color: #FFEE8C !important;
-        border-color: #D4C36C !important;
-        color: #423B14 !important;
-    }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# ---------------------------------------------------------
-# 3. 화면 UI 구성
-# ---------------------------------------------------------
-st.markdown('<div class="main-container">', unsafe_allow_html=True)
-
-# 1) 중앙 전체 우체통 (POST 하얀색 글씨 포함)
-st.markdown(
-    """
-    <div class="mailbox-wrapper">
-        <div class="mailbox-top"></div>
-        <div class="mailbox-body">
-            <div class="mailbox-post-text">POST</div>
-            <div class="mailbox-slot"></div>
-        </div>
-        <div class="mailbox-stand"></div>
-        <div class="mailbox-base"></div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
-
-# 2) 가로폭이 절반인 텍스트 입력 영역 (중앙 배치)
-st.markdown('<div class="input-wrapper">', unsafe_allow_html=True)
-user_message = st.text_area(
-    "letter_input",
-    height=120,
-    placeholder="편지 작성...",
-)
-st.markdown("</div>", unsafe_allow_html=True)
-
-st.markdown("<br>", unsafe_allow_html=True)
-
-# 3) 화면 하단 중앙 '작성 완료' 버튼 배치
-col1, col2, col3 = st.columns([1, 1.2, 1])
-with col2:
-    submit_btn = st.button("작성 완료", use_container_width=True)
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ---------------------------------------------------------
-# 4. 하단 동작 처리
-# ---------------------------------------------------------
-if submit_btn:
-    if user_message:
-        st.success("편지가 작성 완료되었습니다!")
-    else:
-        st.warning("내용을 입력해주세요!")
+    /* 3) 우체통 기둥/받
