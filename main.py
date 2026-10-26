@@ -125,13 +125,14 @@ st.markdown(
         z-index: 1;
     }
 
-    /* 텍스트 입력 영역 전체를 화면 중앙에 300px 폭으로 고정 */
+    /* 텍스트 입력 영역 전체를 화면 중앙에 300px 폭, 높이 100px로 고정 */
     div[data-testid="stTextArea"] {
         width: 300px !important;
+        height: 100px !important;
         margin: 0 auto !important;
     }
 
-    /* 텍스트 입력창 스타일 커스텀 */
+    /* 텍스트 입력창 내부 textarea 높이 고정 */
     div.stTextArea textarea {
         background-color: #FFFFFF !important;
         color: #4A4A4A !important;
@@ -141,6 +142,8 @@ st.markdown(
         border: 2px solid #BFE5B7 !important;
         padding: 10px !important;
         line-height: 1.4 !important;
+        height: 100px !important;
+        min-height: 100px !important;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
     
@@ -164,7 +167,7 @@ st.markdown(
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
         transition: all 0.2s ease-in-out;
     }
-   
+    
     div.stButton > button:hover {
         background-color: #FFEE8C !important;
         border-color: #D4C36C !important;
@@ -187,7 +190,7 @@ st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 user_message = st.text_area(
     "letter_input",
-    height=120,
+    height=100,
     placeholder="편지 작성...",
 )
 
