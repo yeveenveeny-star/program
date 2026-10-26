@@ -125,8 +125,8 @@ st.markdown(
         z-index: 1;
     }
 
-    /* 텍스트 입력 영역 전체를 화면 중앙에 160px 폭으로 고정 */
-    div[data-testid="stTextArea"] {
+    /* 텍스트 입력 영역 및 버튼 Wrapper 너비를 160px로 고정 및 중앙 정렬 */
+    div[data-testid="stTextArea"], .button-wrapper {
         width: 160px !important;
         margin: 0 auto !important;
     }
@@ -149,7 +149,7 @@ st.markdown(
         display: none;
     }
 
-    /* 연한 노란색 '작성 완료' 버튼 (너비를 3분의 1인 33.3%로 설정 및 중앙 정렬) */
+    /* 연한 노란색 '작성 완료' 버튼 (가로 영역 100% 꽉 차도록 확장) */
     div.stButton > button {
         background-color: #FFF3B0 !important;
         color: #5C5320 !important;
@@ -157,10 +157,8 @@ st.markdown(
         font-weight: 700 !important;
         border: 2px solid #E6D785 !important;
         border-radius: 12px !important;
-        padding: 8px 10px !important;
-        width: 33.3% !important;
-        display: block !important;
-        margin: 0 auto !important;
+        padding: 10px 0 !important;
+        width: 100% !important;
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08) !important;
         transition: all 0.2s ease-in-out;
     }
@@ -182,7 +180,7 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
-# 1) 상단 영역: 텍스트 입력창 및 3분의 1 너비의 '작성 완료' 버튼 배치
+# 1) 상단 영역: 텍스트 입력창 및 가로로 긴 '작성 완료' 버튼 중앙 배치
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 user_message = st.text_area(
@@ -191,9 +189,9 @@ user_message = st.text_area(
     placeholder="편지 작성...",
 )
 
-st.markdown("<br>", unsafe_allow_html=True)
-
-submit_btn = st.button("작성 완료")
+st.markdown('<div class="button-wrapper">', unsafe_allow_html=True)
+submit_btn = st.button("작성 완료", use_container_width=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 st.markdown("</div>", unsafe_allow_html=True)
 
