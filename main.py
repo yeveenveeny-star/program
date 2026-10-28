@@ -230,32 +230,13 @@ st.markdown(
         color: #423B14 !important;
     }
 
-    /* 편지 모양 아이콘 스타일 (입력창과 버튼이 사라진 그 자리에 표시) */
-    .letter-envelope {
-        width: 220px;
-        height: 140px;
-        background-color: #FFFDF9;
-        border: 2px solid #E6D785;
-        border-radius: 12px;
-        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        margin: 20px auto 0 auto;
-        position: relative;
+    /* 단독 편지 이모지 스타일 */
+    .letter-emoji-only {
+        font-size: 4rem;
+        text-align: center;
+        margin: 30px auto 0 auto;
         z-index: 2;
-    }
-    .letter-envelope::before {
-        content: '✉️';
-        font-size: 3.5rem;
-        margin-bottom: 8px;
-    }
-    .letter-envelope-text {
-        font-family: 'Malgun Gothic', sans-serif;
-        font-size: 0.95rem;
-        font-weight: 700;
-        color: #5C5320;
+        position: relative;
     }
     </style>
     """,
@@ -281,7 +262,7 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
-# 1) 상단 영역: 제출 여부에 따라 텍스트 입력창/버튼 혹은 편지 모양 표시
+# 1) 상단 영역: 제출 여부에 따라 텍스트 입력창/버튼 혹은 편지 이모지만 표시
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 if not st.session_state.submitted:
@@ -302,15 +283,8 @@ if not st.session_state.submitted:
         else:
             st.warning("내용을 입력해주세요!")
 else:
-    # 텍스트 영역과 버튼이 사라진 그 자리에 표시되는 편지 모양
-    st.markdown(
-        """
-        <div class="letter-envelope">
-            <div class="letter-envelope-text">작성된 편지 보관 중</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
+    # 박스와 글자 없이 단독으로 표시되는 편지 이모지
+    st.markdown('<div class="letter-emoji-only">✉️</div>', unsafe_allow_html=True)
 
 st.markdown("</div>", unsafe_allow_html=True)
 
