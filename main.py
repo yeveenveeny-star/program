@@ -230,13 +230,14 @@ st.markdown(
         color: #423B14 !important;
     }
 
-    /* 단독 편지 이모지 스타일 */
-    .letter-emoji-only {
-        font-size: 4rem;
+    /* 단독 편지 이모지 스타일 (3배 확장, 배경 및 글자 제거) */
+    .letter-envelope-only {
+        font-size: 10.5rem;
         text-align: center;
-        margin: 30px auto 0 auto;
-        z-index: 2;
+        margin: 20px auto 0 auto;
         position: relative;
+        z-index: 2;
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
     }
     </style>
     """,
@@ -262,7 +263,7 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
-# 1) 상단 영역: 제출 여부에 따라 텍스트 입력창/버튼 혹은 편지 이모지만 표시
+# 1) 상단 영역: 제출 여부에 따라 텍스트 입력창/버튼 혹은 3배 확장된 편지 이모지 단독 표시
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 if not st.session_state.submitted:
@@ -283,8 +284,13 @@ if not st.session_state.submitted:
         else:
             st.warning("내용을 입력해주세요!")
 else:
-    # 박스와 글자 없이 단독으로 표시되는 편지 이모지
-    st.markdown('<div class="letter-emoji-only">✉️</div>', unsafe_allow_html=True)
+    # 텍스트 영역과 버튼이 사라진 그 자리에 배경과 글자 없이 3배 확장된 편지 이모지 단독 표시
+    st.markdown(
+        """
+        <div class="letter-envelope-only">✉️</div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.markdown("</div>", unsafe_allow_html=True)
 
