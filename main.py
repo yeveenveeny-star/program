@@ -87,6 +87,31 @@ st.markdown(
         z-index: 2;
     }
 
+    /* 맨 처음 화면 상단에 띄울 안내 텍스트 스타일 ("고민을 적어주세요!") */
+    .guide-text {
+        font-family: 'Malgun Gothic', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #5C5320;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+
+    /* 버튼 클릭 후 상단에 띄울 완료 텍스트 스타일 ("편지가 발송되었습니다" - 하얀색 배경) */
+    .sent-notice-text {
+        background-color: #FFFFFF;
+        color: #5C5320;
+        font-family: 'Malgun Gothic', sans-serif;
+        font-size: 1.1rem;
+        font-weight: 700;
+        padding: 10px 24px;
+        border-radius: 12px;
+        border: 2px solid #E6D785;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
     /* 화면 하단으로부터 160px 위치에 고정될 우체통 컨테이너 */
     .mailbox-bottom-container {
         position: fixed;
@@ -295,10 +320,13 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
-# 1) 상단 영역: 제출 여부에 따라 텍스트 입력창/버튼 혹은 애니메이션 편지 표시
+# 1) 상단 영역: 제출 전/후 상태에 따른 안내 텍스트, 입력창, 버튼, 애니메이션 배치
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 if not st.session_state.submitted:
+    # 맨 처음 화면에만 보이는 "고민을 적어주세요!" 텍스트
+    st.markdown('<div class="guide-text">고민을 적어주세요!</div>', unsafe_allow_html=True)
+
     user_message = st.text_area(
         "letter_input",
         height=100,
@@ -316,7 +344,9 @@ if not st.session_state.submitted:
         else:
             st.warning("내용을 입력해주세요!")
 else:
-    # 작성 완료 버튼 클릭 시 펑! 등장 후 0.5초 정지, 그리고 투입구로 떨어지는 애니메이션 적용
+    # 작성 완료 버튼을 누른 후 상단에 뜨는 하얀색 배경의 "편지가 발송되었습니다" 텍스트
+    st.markdown('<div class="sent-notice-text">편지가 발송되었습니다</div>', unsafe_allow_html=True)
+    # 펑! 하고 나타나서 투입구로 떨어지는 편지 이모지
     st.markdown(
         """
         <div class="letter-envelope-animated">✉️</div>
