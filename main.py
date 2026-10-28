@@ -97,17 +97,12 @@ st.markdown(
         text-align: center;
     }
 
-    /* 버튼 클릭 후 상단에 띄울 완료 텍스트 스타일 ("편지가 발송되었습니다" - 하얀색 배경) */
+    /* 버튼 클릭 후 상단에 띄울 완료 텍스트 스타일 ("편지가 발송되었어요!" - 배경 제거) */
     .sent-notice-text {
-        background-color: #FFFFFF;
         color: #5C5320;
         font-family: 'Malgun Gothic', sans-serif;
-        font-size: 1.1rem;
+        font-size: 1.2rem;
         font-weight: 700;
-        padding: 10px 24px;
-        border-radius: 12px;
-        border: 2px solid #E6D785;
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
         margin-bottom: 20px;
         text-align: center;
     }
@@ -344,8 +339,8 @@ if not st.session_state.submitted:
         else:
             st.warning("내용을 입력해주세요!")
 else:
-    # 작성 완료 버튼을 누른 후 상단에 뜨는 하얀색 배경의 "편지가 발송되었습니다" 텍스트
-    st.markdown('<div class="sent-notice-text">편지가 발송되었습니다</div>', unsafe_allow_html=True)
+    # 작성 완료 버튼을 누른 후 상단에 뜨는 배경 없는 "편지가 발송되었어요!" 텍스트
+    st.markdown('<div class="sent-notice-text">편지가 발송되었어요!</div>', unsafe_allow_html=True)
     # 펑! 하고 나타나서 투입구로 떨어지는 편지 이모지
     st.markdown(
         """
