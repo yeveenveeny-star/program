@@ -230,14 +230,46 @@ st.markdown(
         color: #423B14 !important;
     }
 
-    /* 단독 편지 이모지 스타일 (3배 확장, 배경 및 글자 제거) */
-    .letter-envelope-only {
+    /* 단독 편지 이모지 스타일 & 펑! 등장 + 0.5초 정지 후 투입구 낙하 애니메이션 */
+    .letter-envelope-animated {
         font-size: 10.5rem;
         text-align: center;
         margin: 20px auto 0 auto;
         position: relative;
-        z-index: 2;
-        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.1));
+        z-index: 4;
+        filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+        animation: letterDropSequence 1.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    }
+
+    @keyframes letterDropSequence {
+        /* 1) 펑! 하고 확대되며 등장 */
+        0% {
+            transform: scale(0) translateY(-20px);
+            opacity: 0;
+        }
+        25% {
+            transform: scale(1.15) translateY(0);
+            opacity: 1;
+        }
+        30% {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        /* 2) 0.5초간 가만히 정지 (30% ~ 55%) */
+        55% {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        /* 3) 우체통 투입구 위치로 빠르게 가속 하강 및 약간의 회전 */
+        85% {
+            transform: translateY(350px) scale(0.6) rotate(-10deg);
+            opacity: 1;
+        }
+        /* 4) 투입구 안으로 쏙 들어가면서 사라짐 */
+        100% {
+            transform: translateY(370px) scale(0.05) rotate(0deg);
+            opacity: 0;
+        }
     }
     </style>
     """,
@@ -263,7 +295,7 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
-# 1) 상단 영역: 제출 여부에 따라 텍스트 입력창/버튼 혹은 3배 확장된 편지 이모지 단독 표시
+# 1) 상단 영역: 제출 여부에 따라 텍스트 입력창/버튼 혹은 애니메이션 편지 표시
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 if not st.session_state.submitted:
@@ -284,10 +316,10 @@ if not st.session_state.submitted:
         else:
             st.warning("내용을 입력해주세요!")
 else:
-    # 텍스트 영역과 버튼이 사라진 그 자리에 배경과 글자 없이 3배 확장된 편지 이모지 단독 표시
+    # 작성 완료 버튼 클릭 시 펑! 등장 후 0.5초 정지, 그리고 투입구로 떨어지는 애니메이션 적용
     st.markdown(
         """
-        <div class="letter-envelope-only">✉️</div>
+        <div class="letter-envelope-animated">✉️</div>
         """,
         unsafe_allow_html=True,
     )
