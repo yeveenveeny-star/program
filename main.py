@@ -18,7 +18,7 @@ if "ai_reply" not in st.session_state:
     st.session_state.ai_reply = ""
 
 
-# [함수] 외부 라이브러리 없이 파이썬 내장 urllib으로 OpenAI API 호출하기
+# [함수] 파이썬 내장 urllib으로 OpenAI API 호출하여 캐릭터 답장 받아오기
 def get_ai_response(user_text):
     api_key = "YOUR_OPENAI_API_KEY"  # 본인의 OpenAI API 키를 입력하세요
 
@@ -36,7 +36,7 @@ def get_ai_response(user_text):
                 "role": "system",
                 "content": (
                     "너는 사용자의 고민을 따뜻하게 위로해주는 다정한 AI"
-                    " 캐릭터야. 반말을 쓰고 친근하게 답장해줘."
+                    " 캐릭터야. 반말을 쓰고 친근하고 다정하게 편지 답장을 해줘."
                 ),
             },
             {"role": "user", "content": user_text},
@@ -151,7 +151,7 @@ st.markdown(
         font-family: 'Malgun Gothic', sans-serif;
         font-size: 1.2rem;
         font-weight: 700;
-        margin-bottom: 20px;
+        margin-bottom: 10px;
         text-align: center;
     }
 
@@ -276,7 +276,7 @@ st.markdown(
         display: none;
     }
 
-    /* 연한 노란색 '작성 완료' 버튼 */
+    /* 연한 노란색 버튼 공통 스타일 ('작성 완료' 및 '새로운 고민 나누기') */
     div.stButton > button {
         background-color: #FFF3B0 !important;
         color: #5C5320 !important;
@@ -302,7 +302,7 @@ st.markdown(
     .letter-envelope-animated {
         font-size: 10.5rem;
         text-align: center;
-        margin: 20px auto 0 auto;
+        margin: 10px auto;
         position: relative;
         z-index: 4;
         filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
@@ -310,34 +310,12 @@ st.markdown(
     }
 
     @keyframes letterDropSequence {
-        /* 1) 펑! 하고 확대되며 등장 */
-        0% {
-            transform: scale(0) translateY(-20px);
-            opacity: 0;
-        }
-        25% {
-            transform: scale(1.15) translateY(0);
-            opacity: 1;
-        }
-        30% {
-            transform: scale(1) translateY(0);
-            opacity: 1;
-        }
-        /* 2) 0.5초간 가만히 정지 (30% ~ 55%) */
-        55% {
-            transform: scale(1) translateY(0);
-            opacity: 1;
-        }
-        /* 3) 우체통 투입구 위치로 빠르게 가속 하강 및 약간의 회전 */
-        85% {
-            transform: translateY(350px) scale(0.6) rotate(-10deg);
-            opacity: 1;
-        }
-        /* 4) 투입구 안으로 쏙 들어가면서 사라짐 */
-        100% {
-            transform: translateY(370px) scale(0.05) rotate(0deg);
-            opacity: 0;
-        }
+        0% { transform: scale(0) translateY(-20px); opacity: 0; }
+        25% { transform: scale(1.15) translateY(0); opacity: 1; }
+        30% { transform: scale(1) translateY(0); opacity: 1; }
+        55% { transform: scale(1) translateY(0); opacity: 1; }
+        85% { transform: translateY(350px) scale(0.6) rotate(-10deg); opacity: 1; }
+        100% { transform: translateY(370px) scale(0.05) rotate(0deg); opacity: 0; }
     }
     </style>
     """,
@@ -363,11 +341,11 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
-# 1) 상단 영역: 제출 전/후 상태에 따른 안내 텍스트, 입력창, 버튼, 애니메이션 배치
+# 1) 상단 영역: 제출 전/후 상태에 따른 UI 배치
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 if not st.session_state.submitted:
-    # 맨 처음 화면에만 보이는 "고민을 적어주세요!" 텍스트
+    # 맨 처음 화면
     st.markdown(
         '<div class="guide-text">고민을 적어주세요!</div>',
         unsafe_allow_html=True,
@@ -375,52 +353,4 @@ if not st.session_state.submitted:
 
     user_message = st.text_area(
         "letter_input",
-        height=100,
-        placeholder="편지 작성...",
-    )
-
-    st.markdown("<br>", unsafe_allow_html=True)
-
-    submit_btn = st.button("작성 완료")
-
-    if submit_btn:
-        if user_message:
-            st.session_state.submitted = True
-            # 파이썬 내장 라이브러리로 AI 답장 호출 (필요시 백그라운드 처리용)
-            st.session_state.ai_reply = get_ai_response(user_message)
-            st.rerun()
-        else:
-            st.warning("내용을 입력해주세요!")
-else:
-    # 작성 완료 버튼을 누른 후 상단에 뜨는 배경 없는 "편지가 발송되었어요!" 텍스트
-    st.markdown(
-        '<div class="sent-notice-text">편지가 발송되었어요!</div>',
-        unsafe_allow_html=True,
-    )
-    # 펑! 하고 나타나서 투입구로 떨어지는 편지 이모지
-    st.markdown(
-        """
-        <div class="letter-envelope-animated">✉️</div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-st.markdown("</div>", unsafe_allow_html=True)
-
-# 2) 하단 영역: 하단에서 160px 위로 올라간 우체통 전체 배치
-st.markdown(
-    """
-    <div class="mailbox-bottom-container">
-        <div class="mailbox-wrapper">
-            <div class="mailbox-top"></div>
-            <div class="mailbox-body">
-                <div class="mailbox-post-text">POST</div>
-                <div class="mailbox-slot"></div>
-            </div>
-            <div class="mailbox-stand"></div>
-            <div class="mailbox-base"></div>
-        </div>
-    </div>
-    """,
-    unsafe_allow_html=True,
-)
+        height
