@@ -1,5 +1,3 @@
-import json
-import urllib.request
 import streamlit as st
 
 # 1. 페이지 기본 설정
@@ -10,55 +8,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# 세션 상태 초기화
+# 세션 상태 초기화 (편지 제출 여부 저장)
 if "submitted" not in st.session_state:
     st.session_state.submitted = False
-
-if "ai_reply" not in st.session_state:
-    st.session_state.ai_reply = ""
-
-
-# [함수] 파이썬 내장 urllib으로 OpenAI API 호출하여 캐릭터 답장 받아오기
-def get_ai_response(user_text):
-    api_key = "YOUR_OPENAI_API_KEY"  # 본인의 OpenAI API 키를 입력하세요
-
-    url = "https://api.openai.com/v1/chat/completions"
-
-    headers = {
-        "Content-Type": "application/json",
-        "Authorization": f"Bearer {api_key}",
-    }
-
-    data = {
-        "model": "gpt-4o-mini",
-        "messages": [
-            {
-                "role": "system",
-                "content": (
-                    "너는 사용자의 고민을 따뜻하게 위로해주는 다정한 AI"
-                    " 캐릭터야. 반말을 쓰고 친근하고 다정하게 편지 답장을 해줘."
-                ),
-            },
-            {"role": "user", "content": user_text},
-        ],
-    }
-
-    req = urllib.request.Request(
-        url,
-        data=json.dumps(data).encode("utf-8"),
-        headers=headers,
-        method="POST",
-    )
-
-    try:
-        with urllib.request.urlopen(req) as response:
-            result = json.loads(response.read().decode("utf-8"))
-            return result["choices"][0]["message"]["content"]
-    except Exception as e:
-        return (
-            "편지를 읽어보았지만, 지금은 답장을 전하기가 조금 어려울 것 같아!"
-        )
-
 
 # 2. 디자인 스타일 적용 (CSS)
 st.markdown(
@@ -151,7 +103,7 @@ st.markdown(
         font-family: 'Malgun Gothic', sans-serif;
         font-size: 1.2rem;
         font-weight: 700;
-        margin-bottom: 10px;
+        margin-bottom: 20px;
         text-align: center;
     }
 
@@ -276,7 +228,7 @@ st.markdown(
         display: none;
     }
 
-    /* 연한 노란색 버튼 공통 스타일 ('작성 완료' 및 '새로운 고민 나누기') */
+    /* 연한 노란색 '작성 완료' 버튼 */
     div.stButton > button {
         background-color: #FFF3B0 !important;
         color: #5C5320 !important;
@@ -302,7 +254,7 @@ st.markdown(
     .letter-envelope-animated {
         font-size: 10.5rem;
         text-align: center;
-        margin: 10px auto;
+        margin: 20px auto 0 auto;
         position: relative;
         z-index: 4;
         filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
@@ -310,12 +262,34 @@ st.markdown(
     }
 
     @keyframes letterDropSequence {
-        0% { transform: scale(0) translateY(-20px); opacity: 0; }
-        25% { transform: scale(1.15) translateY(0); opacity: 1; }
-        30% { transform: scale(1) translateY(0); opacity: 1; }
-        55% { transform: scale(1) translateY(0); opacity: 1; }
-        85% { transform: translateY(350px) scale(0.6) rotate(-10deg); opacity: 1; }
-        100% { transform: translateY(370px) scale(0.05) rotate(0deg); opacity: 0; }
+        /* 1) 펑! 하고 확대되며 등장 */
+        0% {
+            transform: scale(0) translateY(-20px);
+            opacity: 0;
+        }
+        25% {
+            transform: scale(1.15) translateY(0);
+            opacity: 1;
+        }
+        30% {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        /* 2) 0.5초간 가만히 정지 (30% ~ 55%) */
+        55% {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+        /* 3) 우체통 투입구 위치로 빠르게 가속 하강 및 약간의 회전 */
+        85% {
+            transform: translateY(350px) scale(0.6) rotate(-10deg);
+            opacity: 1;
+        }
+        /* 4) 투입구 안으로 쏙 들어가면서 사라짐 */
+        100% {
+            transform: translateY(370px) scale(0.05) rotate(0deg);
+            opacity: 0;
+        }
     }
     </style>
     """,
@@ -341,11 +315,11 @@ st.markdown(
 # 하단 잔디밭 배경
 st.markdown('<div class="grass-field"></div>', unsafe_allow_html=True)
 
-# 1) 상단 영역: 제출 전/후 상태에 따른 UI 배치
+# 1) 상단 영역: 제출 전/후 상태에 따른 안내 텍스트, 입력창, 버튼, 애니메이션 배치
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 if not st.session_state.submitted:
-    # 맨 처음 화면
+    # 맨 처음 화면에만 보이는 "고민을 적어주세요!" 텍스트
     st.markdown(
         '<div class="guide-text">고민을 적어주세요!</div>',
         unsafe_allow_html=True,
@@ -364,17 +338,16 @@ if not st.session_state.submitted:
     if submit_btn:
         if user_message:
             st.session_state.submitted = True
-            # AI API를 통해 캐릭터 답장 가져오기
-            st.session_state.ai_reply = get_ai_response(user_message)
             st.rerun()
         else:
             st.warning("내용을 입력해주세요!")
 else:
-    # 편지 발송 완료 후 화면 (애니메이션 + AI 캐릭터 답장 카드)
+    # 작성 완료 버튼을 누른 후 상단에 뜨는 배경 없는 "편지가 발송되었어요!" 텍스트
     st.markdown(
         '<div class="sent-notice-text">편지가 발송되었어요!</div>',
         unsafe_allow_html=True,
     )
+    # 펑! 하고 나타나서 투입구로 떨어지는 편지 이모지
     st.markdown(
         """
         <div class="letter-envelope-animated">✉️</div>
@@ -382,26 +355,9 @@ else:
         unsafe_allow_html=True,
     )
 
-    # 캐릭터의 답장 편지지 카드
-    st.markdown(
-        f"""
-        <div style="background-color: #FFFFFF; padding: 20px; border-radius: 15px; border: 2px solid #E6D785; margin-top: 10px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 4; position: relative; max-width: 500px; width: 100%;">
-            <p style="font-weight: 700; color: #5C5320; margin-bottom: 8px; font-size: 1rem;">💌 캐릭터의 답장</p>
-            <p style="color: #4A4A4A; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap;">{st.session_state.ai_reply}</p>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # 다시 편지를 쓸 수 있도록 초기화하는 버튼
-    if st.button("새로운 고민 나누기"):
-        st.session_state.submitted = False
-        st.session_state.ai_reply = ""
-        st.rerun()
-
 st.markdown("</div>", unsafe_allow_html=True)
 
-# 2) 하단 영역: 우체통 배치
+# 2) 하단 영역: 하단에서 160px 위로 올라간 우체통 전체 배치
 st.markdown(
     """
     <div class="mailbox-bottom-container">
