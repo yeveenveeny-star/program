@@ -250,7 +250,7 @@ st.markdown(
         color: #423B14 !important;
     }
 
-    /* 단독 편지 이모지 스타일 & 펑! 등장 + 0.5초 정지 후 투입구 낙하 애니메이션 */
+    /* 단독 편지 이모지 스타일 & 펑! 등장 + 0.5초 정지 후 투입구 위치로 낙하 애니메이션 */
     .letter-envelope-animated {
         font-size: 10.5rem;
         text-align: center;
@@ -280,14 +280,14 @@ st.markdown(
             transform: scale(1) translateY(0);
             opacity: 1;
         }
-        /* 3) 우체통 투입구 위치로 빠르게 가속 하강 및 약간의 회전 */
+        /* 3) 우체통 투입구 위치로 낙하 (위치를 더 높게 조정) */
         85% {
-            transform: translateY(350px) scale(0.6) rotate(-10deg);
+            transform: translateY(220px) scale(0.6) rotate(-10deg);
             opacity: 1;
         }
-        /* 4) 투입구 안으로 쏙 들어가면서 사라짐 */
+        /* 4) 투입구 슬롯에 닿아 쏙 들어가며 사라짐 */
         100% {
-            transform: translateY(370px) scale(0.05) rotate(0deg);
+            transform: translateY(240px) scale(0.05) rotate(0deg);
             opacity: 0;
         }
     }
@@ -347,7 +347,7 @@ else:
         '<div class="sent-notice-text">편지가 발송되었어요!</div>',
         unsafe_allow_html=True,
     )
-    # 펑! 하고 나타나서 투입구로 떨어지는 편지 이모지
+    # 펑! 하고 나타나서 투입구 슬롯 위치로 올라가 쏙 들어가는 편지 이모지
     st.markdown(
         """
         <div class="letter-envelope-animated">✉️</div>
