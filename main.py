@@ -3,9 +3,6 @@ from openai import OpenAI  # 또는 사용하시려는 AI 라이브러리
 
 # API 클라이언트 초기화 (Streamlit Secrets 등에 키를 안전하게 보관하는 것이 좋습니다)
 # client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-
-# 세션 상태에 AI 답장 저장 변수 추가
-if "ai_reply" not in st.session_state:
     st.session_state.ai_reply = ""
 
 # ... (기존 CSS 및 디자인 코드 생략) ...
