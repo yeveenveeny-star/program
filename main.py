@@ -386,7 +386,7 @@ if not st.session_state.submitted:
     if submit_btn:
         if user_message:
             st.session_state.submitted = True
-            # 파이썬 내장 라이브러리로 AI 답장 가져오기 실행
+            # 파이썬 내장 라이브러리로 AI 답장 호출 (필요시 백그라운드 처리용)
             st.session_state.ai_reply = get_ai_response(user_message)
             st.rerun()
         else:
@@ -401,17 +401,6 @@ else:
     st.markdown(
         """
         <div class="letter-envelope-animated">✉️</div>
-        """,
-        unsafe_allow_html=True,
-    )
-
-    # 애니메이션이 끝난 후 나타나는 캐릭터의 답장 카드
-    st.markdown(
-        f"""
-        <div style="background-color: #FFFFFF; padding: 20px; border-radius: 15px; border: 2px solid #E6D785; margin-top: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 4; position: relative;">
-            <p style="font-weight: 700; color: #5C5320; margin-bottom: 8px;">💌 캐릭터의 답장</p>
-            <p style="color: #4A4A4A; font-size: 0.95rem; line-height: 1.5;">{st.session_state.ai_reply}</p>
-        </div>
         """,
         unsafe_allow_html=True,
     )
