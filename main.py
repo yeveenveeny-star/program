@@ -353,4 +353,68 @@ if not st.session_state.submitted:
 
     user_message = st.text_area(
         "letter_input",
-        height
+        height=100,
+        placeholder="편지 작성...",
+    )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+
+    submit_btn = st.button("작성 완료")
+
+    if submit_btn:
+        if user_message:
+            st.session_state.submitted = True
+            # AI API를 통해 캐릭터 답장 가져오기
+            st.session_state.ai_reply = get_ai_response(user_message)
+            st.rerun()
+        else:
+            st.warning("내용을 입력해주세요!")
+else:
+    # 편지 발송 완료 후 화면 (애니메이션 + AI 캐릭터 답장 카드)
+    st.markdown(
+        '<div class="sent-notice-text">편지가 발송되었어요!</div>',
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        """
+        <div class="letter-envelope-animated">✉️</div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # 캐릭터의 답장 편지지 카드
+    st.markdown(
+        f"""
+        <div style="background-color: #FFFFFF; padding: 20px; border-radius: 15px; border: 2px solid #E6D785; margin-top: 10px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 4; position: relative; max-width: 500px; width: 100%;">
+            <p style="font-weight: 700; color: #5C5320; margin-bottom: 8px; font-size: 1rem;">💌 캐릭터의 답장</p>
+            <p style="color: #4A4A4A; font-size: 0.95rem; line-height: 1.5; white-space: pre-wrap;">{st.session_state.ai_reply}</p>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+    # 다시 편지를 쓸 수 있도록 초기화하는 버튼
+    if st.button("새로운 고민 나누기"):
+        st.session_state.submitted = False
+        st.session_state.ai_reply = ""
+        st.rerun()
+
+st.markdown("</div>", unsafe_allow_html=True)
+
+# 2) 하단 영역: 우체통 배치
+st.markdown(
+    """
+    <div class="mailbox-bottom-container">
+        <div class="mailbox-wrapper">
+            <div class="mailbox-top"></div>
+            <div class="mailbox-body">
+                <div class="mailbox-post-text">POST</div>
+                <div class="mailbox-slot"></div>
+            </div>
+            <div class="mailbox-stand"></div>
+            <div class="mailbox-base"></div>
+        </div>
+    </div>
+    """,
+    unsafe_allow_html=True,
+)
