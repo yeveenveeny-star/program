@@ -20,7 +20,7 @@ if "ai_reply" not in st.session_state:
 
 # [함수] 외부 라이브러리 없이 파이썬 내장 urllib으로 OpenAI API 호출하기
 def get_ai_response(user_text):
-    # 👇 여기에 본인의 실제 OpenAI API 키를 입력하세요! ("YOUR_OPENAI_API_KEY" 대신 입력)
+    # 본인의 실제 OpenAI API 키를 입력하거나 st.secrets를 사용하세요.
     api_key = "YOUR_OPENAI_API_KEY"
 
     url = "https://api.openai.com/v1/chat/completions"
@@ -274,7 +274,7 @@ else:
         unsafe_allow_html=True,
     )
 
-    # AI 캐릭터의 답장 편지지 카드
+    # AI 캐릭터의 답장 편지지 카드 (CSS 스타일 적용)
     st.markdown(
         f"""
         <div style="background-color: #FFFFFF; padding: 20px; border-radius: 15px; border: 2px solid #E6D785; margin-top: 15px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); z-index: 4; position: relative; max-width: 500px; width: 100%;">
